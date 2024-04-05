@@ -1,0 +1,19 @@
+Weekly report summary:
+- Initial breakdown of project
+- Creation and setup of repository
+- Specifications and analysis breakdown
+
+William: 
+- 3hrs lecture
+- 2hrs group specifications analysis + repo creation
+- 4hrs group call: Initial design of UML diagram
+
+Sai:
+- 3hrs lecture
+- 2hrs group specifications analysis + repo creation
+- 4hrs group call: Creation and addition of QT files
+
+Nathan:
+- 3hrs lecture
+- 2hrs group specifications analysis + repo creation
+- 4hrs group call: Initial design of UML diagram
