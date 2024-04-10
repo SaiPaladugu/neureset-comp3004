@@ -10,7 +10,6 @@
 #include <QStringList>
 #include <QtConcurrent/QtConcurrent>
 #include "eegsite.h"
-#include "dateTime.h"
 
 class Session;
 class EEGsite;

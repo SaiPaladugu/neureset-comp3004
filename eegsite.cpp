@@ -1,12 +1,12 @@
 #include "eegsite.h"
 
-eegSite::eegSite()
+EEGSite::EEGSite()
 {
     siteBaseline = 0;
 }
-eegSite::~eegSite(){}
+EEGSite::~EEGSite(){}
 
-int eegSite::calculateSiteBaseline(){
+int EEGSite::calculateSiteBaseline(){
     int band = QRandomGenerator::global()->bounded(1,6);
     int frequencies[3];
     int amplitudes[3];
@@ -48,7 +48,7 @@ int eegSite::calculateSiteBaseline(){
     return siteBaseline;
 }
 
-void eegSite::applyTreatment(){
+void EEGSite::applyTreatment(){
     for(int i = 0; i < 16; i++){
         siteBaseline = siteBaseline + 5;
         QThread::msleep(63);
@@ -57,6 +57,6 @@ void eegSite::applyTreatment(){
     //qInfo() << "Treatment applied";
 }
 
-int eegSite::getBaseline(){
+int EEGSite::getBaseline(){
     return siteBaseline;
 }

@@ -5,11 +5,11 @@
 #include <QRandomGenerator>
 #include <QThread>
 
-class eegSite : public QObject
+class EEGSite : public QObject
 {
 public:
-    eegSite();
-    ~eegSite();
+    EEGSite();
+    ~EEGSite();
     int calculateSiteBaseline();
     void applyTreatment();
     int getBaseline();
