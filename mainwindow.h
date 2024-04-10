@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include "dateTime.h"
+#include <string>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -16,8 +17,27 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
     dateTime date;
+    enum MenuOption {
+        NewSession,
+        SessionLog,
+        TimeDate,
+        Menu
+    };
+
+    void updateDisplay(MenuOption option);
+
+public slots:
+    void onUpArrowPressed();
+    void onDownArrowPressed();
+    void onSelectPressed();
+    void changeDisplay(MenuOption option = Menu);
 
 private:
     Ui::MainWindow *ui;
+    void highlightCurrentSelection();
+    void updateDateTimeDisplay();
+
+    MenuOption currentSelection;
+    MenuOption currentDisplay;
 };
 #endif // MAINWINDOW_H
