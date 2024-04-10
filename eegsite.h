@@ -6,7 +6,6 @@
 #include <QThread>
 
 class EEGSite {
-    Q_OBJECT
 public:
     EEGSite();
     ~EEGSite();

@@ -15,7 +15,7 @@
 #define NUM_SITES 7
 
 class Session;
-class EEGsite;
+class EEGSite;
 
 class Neureset : public QObject {
     Q_OBJECT
