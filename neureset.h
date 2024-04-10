@@ -26,13 +26,12 @@ private:
     bool beeping;
 
     // new stuff to be added to UML
-    float intialAverageBaseline;
+    int intialAverageBaseline;
     QTimer* therapyTimer;
     QTimer* pauseTimer;
     bool sessionInProgress;
     bool sessionPaused;
     int currentSiteIndex;
-    int totalSites = 7;
     
 
 public:

@@ -8,8 +8,8 @@ class Session {
     public:
         Session();
         ~Session();
-        float startBaseline;
-        float endBaseline;
+        int startBaseline;
+        int endBaseline;
         int progress;
         QDateTime dateTime;
 
