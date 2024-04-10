@@ -51,9 +51,9 @@ public:
     bool exportSessionData(const QString& filepath, const QVector<Session*>& sessions);
     QVector<Session*> importSessionData(const QString& filename);
 
-public slots;
+public slots:
     void stopSession();
     void processNextSite();
-}
+};
 
 #endif // NERUSET_H

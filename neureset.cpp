@@ -1,4 +1,4 @@
-#include "neuroset.h"
+#include "neureset.h"
 
 Neureset::Neureset() : beeping(false), time(QDateTime::currentDateTime()) {
     qInfo() << "Neureset created";
