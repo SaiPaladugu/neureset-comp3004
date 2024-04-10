@@ -13,14 +13,14 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     eegsite.cpp \
-    nereset.cpp \
+    neureset.cpp \
     session.cpp 
 
 HEADERS += \
     dateTime.h \
     mainwindow.h \
     eegsite.h \
-    nereset.h \
+    neureset.h \
     session.h 
 
 FORMS += \
