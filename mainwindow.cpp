@@ -1,7 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 //#include "display.h"
-#include "dateTime.h"
 #include <string>
 
 MainWindow::MainWindow(QWidget *parent)
@@ -9,7 +8,6 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    dateTime date;
 
     // set default label background to clear and other elements to invisible
     ui->new_session->setStyleSheet("background-color: #FFFFFF");
@@ -29,7 +27,6 @@ MainWindow::MainWindow(QWidget *parent)
         this->changeDisplay(MainWindow::Menu);
     });
 
-    date.getDateTime();
 }
 
 MainWindow::~MainWindow()
