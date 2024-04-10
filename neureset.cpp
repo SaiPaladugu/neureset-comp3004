@@ -1,6 +1,6 @@
 #include "neureset.h"
 
-Neureset::Neureset() : beeping(false), time(QDateTime::currentDateTime()) {
+Neureset::Neureset(QObject *parent) : beeping(false), time(QDateTime::currentDateTime()) {
     qInfo() << "Neureset created";
     // Create the eeg sites
     for (int i = 0 ; i < 7; i++){

@@ -5,8 +5,8 @@
 #include <QRandomGenerator>
 #include <QThread>
 
-class EEGSite : public QObject
-{
+class EEGSite {
+    Q_OBJECT
 public:
     EEGSite();
     ~EEGSite();
