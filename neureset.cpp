@@ -118,13 +118,13 @@ QVector<Session*>& Neureset::sessionLog(){
 
 void Neureset::beep(){
     // TODO: Figure what this is for, maybe below is a implementation for it
-    // if (!beeping){
-    //     beeping = true;
-    //     qInfo() << "Beep!";
-    //     QTimer::singleShot(1000, this, &Neureset::beep);
-    // } else {
-    //     beeping = false;
-    // }
+    if (!beeping){
+        beeping = true;
+        qInfo() << "Beep!";
+        QTimer::singleShot(1000, this, &Neureset::beep);
+    } else {
+        beeping = false;
+    }
 }
 
 void Neureset::calculateBaseline(){
