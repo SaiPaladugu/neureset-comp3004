@@ -1,6 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "display.h"
+//#include "display.h"
 #include "dateTime.h"
 #include <string>
 
