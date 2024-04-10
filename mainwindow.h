@@ -2,7 +2,6 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include "dateTime.h"
 #include <string>
 
 QT_BEGIN_NAMESPACE
@@ -16,7 +15,6 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
-    dateTime date;
     enum MenuOption {
         NewSession,
         SessionLog,
