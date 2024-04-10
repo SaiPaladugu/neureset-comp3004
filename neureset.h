@@ -10,6 +10,9 @@
 #include <QStringList>
 #include <QtConcurrent/QtConcurrent>
 #include "eegsite.h"
+#include "session.h"
+
+#define NUM_SITES 7
 
 class Session;
 class EEGsite;
@@ -18,7 +21,7 @@ class Neureset : public QObject {
     Q_OBJECT
 private:
     QVector<Session*> sessions;
-    QVector<EEGsite*> sites;
+    EEGSite* sites[NUM_SITES];
     QDateTime time;
     bool beeping;
 
