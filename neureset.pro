@@ -11,11 +11,17 @@ CONFIG += c++11
 SOURCES += \
     dateTime.cpp \
     main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    eegsite.cpp \
+    nereset.cpp \
+    session.cpp 
 
 HEADERS += \
     dateTime.h \
-    mainwindow.h
+    mainwindow.h \
+    eegsite.h \
+    nereset.h \
+    session.h 
 
 FORMS += \
     mainwindow.ui
