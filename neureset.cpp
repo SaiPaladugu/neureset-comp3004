@@ -128,7 +128,7 @@ void Neureset::beep(){
 }
 
 void Neureset::calculateBaseline(){
-     // Calculate baselines
+    // Calculate baselines
     QFuture<void> futures[7];
     for (int i = 0; i < sites.size(); i++){
         futures[i] = QtConcurrent::run(sites.at(i), &EEGsite::calculateBaseline);
