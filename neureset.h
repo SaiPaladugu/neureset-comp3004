@@ -11,19 +11,23 @@
 #include <QtConcurrent/QtConcurrent>
 #include "eegsite.h"
 #include "session.h"
+#include "mediator.h"
+#include "light.h"
 
 #define NUM_SITES 7
+#define NUM_LIGHTS 3
 
 class Session;
 class EEGSite;
 
-class Neureset : public QObject {
+class Neureset : public QObject, public Mediator {
     Q_OBJECT
 private:
     QVector<Session*> sessions;
     EEGSite* sites[NUM_SITES];
     QDateTime time;
     bool beeping;
+    Light* lights[NUM_LIGHTS];
 
     // new stuff to be added to UML
     int intialAverageBaseline;
@@ -38,19 +42,19 @@ public:
     Neureset(QObject *parent = nullptr);
     ~Neureset();
 
-    void newSession();
-    void pauseSession();
-    void unpauseSession();
-    void finishSession();
+    virtual void newSession();
+    virtual void pauseSession();
+    virtual void unpauseSession();
+    virtual void finishSession();
     // void stopSession();
     void changeDateTime(QDateTime newTime);
-    QVector<Session*>& sessionLog();
+    virtual QVector<Session*>& sessionLog();
     void beep();
-    void calculateBaseline();
+    virtual void calculateBaseline();
     void notify(QString message);
 
-    bool exportSessionData(const QString& filepath, const QVector<Session*>& sessions);
-    QVector<Session*> importSessionData(const QString& filename);
+    virtual bool exportSessionData(const QString& filepath, const QVector<Session*>& sessions);
+    virtual QVector<Session*> importSessionData(const QString& filename);
 
 public slots:
     void stopSession();

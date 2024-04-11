@@ -3,11 +3,17 @@
 Neureset::Neureset(QObject *parent) : beeping(false), time(QDateTime::currentDateTime()) {
     qInfo() << "Neureset created";
     // Create the eeg sites
-    for (int i = 0 ; i < 7; i++){
+    for (int i = 0 ; i < NUM_SITES; i++){
         sites[i] = new EEGSite();
     }
 
     intialAverageBaseline = -1;
+
+    for (int i = 0 ; i < NUM_LIGHTS/3; i = i+3){
+        lights[i] = new Light("blue");
+        lights[i+1] = new Light("green");
+        lights[i+2] = new Light("red");
+    }
 
 }
 
@@ -15,6 +21,11 @@ Neureset::~Neureset() {
     qInfo() << "Neureset destroyed";
     for (int i = 0; i < NUM_SITES; i++){
         delete sites[i];
+    }
+    for (int i = 0 ; i < NUM_LIGHTS/3; i = i+3){
+        delete lights[i];
+        delete lights[i+1];
+        delete lights[i+2];
     }
 }
 

@@ -9,15 +9,19 @@ CONFIG += c++11
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    light.cpp \
     main.cpp \
     mainwindow.cpp \
     eegsite.cpp \
+    mediator.cpp \
     neureset.cpp \
     session.cpp 
 
 HEADERS += \
+    light.h \
     mainwindow.h \
     eegsite.h \
+    mediator.h \
     neureset.h \
     session.h 
 
