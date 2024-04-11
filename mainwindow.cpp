@@ -7,6 +7,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
+
     // set default label background to clear and other elements to invisible
     ui->new_session->setStyleSheet("background-color: #FFFFFF");
     ui->session_log->setStyleSheet("background-color: #FFFFFF");
