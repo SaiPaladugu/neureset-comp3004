@@ -12,8 +12,10 @@
 #include "eegsite.h"
 #include "session.h"
 #include "mediator.h"
+#include "light.h"
 
 #define NUM_SITES 7
+#define NUM_LIGHTS 3
 
 class Session;
 class EEGSite;
@@ -25,6 +27,7 @@ private:
     EEGSite* sites[NUM_SITES];
     QDateTime time;
     bool beeping;
+    Light* lights[NUM_LIGHTS];
 
     // new stuff to be added to UML
     int intialAverageBaseline;

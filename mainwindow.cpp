@@ -1,13 +1,11 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-//#include "display.h"
 #include <string>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow), currentSelection(NewSession), currentDisplay(Menu)
 {
     ui->setupUi(this);
-
 
     // set default label background to clear and other elements to invisible
     ui->new_session->setStyleSheet("background-color: #FFFFFF");
