@@ -31,6 +31,8 @@ public slots:
     void onDownArrowPressed();
     void onSelectPressed();
     void changeDisplay(MenuOption option = Menu);
+    void pauseSession();
+    void startSession();
 
 private:
     Ui::MainWindow *ui;

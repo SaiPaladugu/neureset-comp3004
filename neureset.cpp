@@ -14,8 +14,9 @@ Neureset::Neureset(QObject *parent) : beeping(false), time(QDateTime::currentDat
         lights[i+1] = new Light("green");
         lights[i+2] = new Light("red");
     }
-    therapyTimer = new QTimer(this);
-    connect(therapyTimer, &QTimer::timeout, this, &Neureset::processNextSite);
+    paused = true;
+
+    sessions = importSessionData("sessions_data.txt");
 }
 
 Neureset::~Neureset() {
@@ -28,13 +29,11 @@ Neureset::~Neureset() {
         delete lights[i+1];
         delete lights[i+2];
     }
-    delete therapyTimer;;
 }
 
 void Neureset::newSession(){
-    if (therapyTimer->isActive()){
-        therapyTimer->stop();
-    }
+    running = true;
+    if (paused == true) paused = false;
     calculateBaseline();
 
     Session* session = new Session();
@@ -45,42 +44,28 @@ void Neureset::newSession(){
 
     //therapyTimer->start(1000);
     currentSiteIndex = 0;
-    while(currentSiteIndex < NUM_SITES){
+    while(currentSiteIndex < NUM_SITES && !paused){
         processNextSite();
     }
-    finishSession();
+    if (currentSiteIndex == NUM_SITES) finishSession();
 }
 
 void Neureset::pauseSession(){
-    if(therapyTimer){
-        therapyTimer->stop();
-    }
-
-     // Start a timer that will stop the session after 5 minute
-    pauseTimer = new QTimer(this);
-    connect(pauseTimer, &QTimer::timeout, this, &Neureset::stopSession);
-    pauseTimer->start(300000); 
+    paused = true;
 }
 
 void Neureset::unpauseSession(){
-    if(therapyTimer){
-        therapyTimer->start(1000);
-    }
+    paused = false;
 
-    // If the pause timer is running, stop it
-    if (pauseTimer){
-        pauseTimer->stop();
-        delete pauseTimer;
-        pauseTimer = nullptr;
+    while(currentSiteIndex < NUM_SITES && !paused){
+        processNextSite();
     }
+    if (currentSiteIndex == NUM_SITES) finishSession();
+
 }
 
 void Neureset::stopSession(){
- if (therapyTimer){
-        therapyTimer->stop();
-        delete therapyTimer;
-        therapyTimer = nullptr;
-    }
+    paused = true;
     if (!sessions.empty()){
         delete sessions.back();
         sessions.pop_back();
@@ -101,11 +86,7 @@ void Neureset::finishSession(){
     }
 
     qInfo() << "End baseline" << finalAverageBaseline;
-
-    // Stop the therapy timer
-    if (therapyTimer->isActive()){
-        therapyTimer->stop();
-    }
+    running = false;
 }
 
 void Neureset::processNextSite(){
@@ -162,10 +143,20 @@ void Neureset::notify(QString message){
 }
 
 
+bool Neureset::isRunning(){
+    return running;
+}
 
 
-bool Neureset::exportSessionData(const QString& filepath, const QVector<Session*>& sessions){
-    QFile file(filepath);
+bool Neureset::exportSessionData(const QString& filename, const QVector<Session*>& sessions){
+    qDebug()<<"In export";
+    qDebug() << "Current working directory:" << QDir::currentPath();
+    QString sourceDir = SOURCE_DIR;
+    QString relativeFilePath = sourceDir + '/' + filename;
+    qDebug()<<relativeFilePath;
+
+    QFile::remove(relativeFilePath);
+    QFile file(relativeFilePath);
     if(!file.open(QIODevice::WriteOnly | QIODevice::Text)){
         qWarning() << "Could not open file for writing";
         return false;
@@ -174,6 +165,7 @@ bool Neureset::exportSessionData(const QString& filepath, const QVector<Session*
     QTextStream out(&file);
     for (const Session* session : sessions){
         if (session){
+            qDebug()<<"Exporting"<<session->startBaseline;
             out << session->startBaseline <<",";
             out << session->endBaseline <<",";
             out << session->progress <<",";
@@ -185,9 +177,12 @@ bool Neureset::exportSessionData(const QString& filepath, const QVector<Session*
     return true;
 }
 
-QVector<Session*> Neureset::importSessionData(const QString& filepath){
+QVector<Session*> Neureset::importSessionData(const QString& filename){
     QVector<Session*> sessions;
-    QFile file(filepath);
+
+    QString relativeFilePath = SOURCE_DIR + '/' + filename;
+    qDebug()<<relativeFilePath;
+    QFile file(relativeFilePath);
     if(!file.open(QIODevice::ReadOnly | QIODevice::Text)){
         qWarning() << "Could not open file for reading";
         return sessions;

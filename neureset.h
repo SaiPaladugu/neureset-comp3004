@@ -31,11 +31,12 @@ private:
 
     // new stuff to be added to UML
     int initialAverageBaseline;
-    QTimer* therapyTimer;
+    bool paused;
     QTimer* pauseTimer;
     bool sessionInProgress;
     bool sessionPaused;
     int currentSiteIndex;
+    bool running;
     
 
 public:
@@ -55,6 +56,8 @@ public:
 
     virtual bool exportSessionData(const QString& filepath, const QVector<Session*>& sessions);
     virtual QVector<Session*> importSessionData(const QString& filename);
+
+    bool isRunning();
 
 public slots:
     void stopSession();
