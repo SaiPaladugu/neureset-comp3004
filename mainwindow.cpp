@@ -7,7 +7,6 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-
     // set default label background to clear and other elements to invisible
     ui->new_session->setStyleSheet("background-color: #FFFFFF");
     ui->session_log->setStyleSheet("background-color: #FFFFFF");
@@ -62,7 +61,7 @@ void MainWindow::onSelectPressed()
 void MainWindow::highlightCurrentSelection()
 {
     if (currentDisplay != Menu) {
-        return; // no highlighting in other menus
+        return; // no highlighting in other menus (currently)
     }
 
     ui->new_session->setStyleSheet("background-color: #FFFFFF");
