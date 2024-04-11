@@ -12,12 +12,14 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     eegsite.cpp \
+    mediator.cpp \
     neureset.cpp \
     session.cpp 
 
 HEADERS += \
     mainwindow.h \
     eegsite.h \
+    mediator.h \
     neureset.h \
     session.h 
 
