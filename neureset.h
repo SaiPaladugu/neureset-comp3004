@@ -21,7 +21,7 @@ class Neureset : public QObject {
     Q_OBJECT
 private:
     QVector<Session*> sessions;
-    EEGSite* sites[NUM_SITES];
+    QVector<EEGSite*> sites;
     QDateTime time;
     bool beeping;
 

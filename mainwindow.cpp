@@ -1,6 +1,9 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <string>
+#include <QThread>
+
+#include <neureset.h>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow), currentSelection(NewSession), currentDisplay(Menu)
@@ -26,6 +29,61 @@ MainWindow::MainWindow(QWidget *parent)
         this->changeDisplay(MainWindow::Menu);
     });
 
+    // Mock sessions creation
+//    Neureset neureset;
+//    QVector<Session*> mockSessions;
+//    for (int i = 0; i < 5; ++i) {
+//        Session* session = new Session();
+//        session->startBaseline = i * 10; // Sample data
+//        session->endBaseline = i * 20;
+//        session->progress = 100;
+//        session->dateTime = QDateTime::currentDateTime().addDays(-i);
+//        mockSessions.append(session);
+//    }
+
+//    // Export mock sessions to a file
+//    QString sourceDirPath = SOURCE_DIR;
+//    QString filepath = sourceDirPath + "/sessions_data.txt";
+//    if (neureset.exportSessionData(filepath, mockSessions)) {
+//        qDebug() << "Sessions exported successfully.";
+//    } else {
+//        qDebug() << "Failed to export sessions.";
+//    }
+
+//    // Cleanup
+//    qDeleteAll(mockSessions);
+//    mockSessions.clear();
+
+//    // Call the import method
+//    QVector<Session*> importedSessions = neureset.importSessionData(filepath);
+
+//    // Verify the imported sessions
+//    qDebug() << "Imported Sessions:";
+//    for (const Session* session : importedSessions) {
+//        qDebug() << "Start Baseline:" << session->startBaseline
+//                 << ", End Baseline:" << session->endBaseline
+//                 << ", Progress:" << session->progress
+//                 << ", DateTime:" << session->dateTime.toString("yyyy-MM-dd hh:mm:ss");
+//    }
+
+//    // Remember to clean up the imported sessions to avoid memory leaks
+//    qDeleteAll(importedSessions);
+
+    Neureset neureset;
+
+    // Start a new session and observe the process
+    qDebug() << "Starting a new session...";
+    neureset.newSession();
+
+//    QThread::sleep(600);
+
+    // Optionally, test export functionality
+//    QString filepath = "sessions_data.txt";
+//    if (neureset.exportSessionData(filepath, neureset.sessionLog())) {
+//        qDebug() << "Session data exported successfully to:" << filepath;
+//    } else {
+//        qDebug() << "Failed to export session data.";
+//    }
 }
 
 MainWindow::~MainWindow()
