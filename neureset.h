@@ -30,7 +30,7 @@ private:
     Light* lights[NUM_LIGHTS];
 
     // new stuff to be added to UML
-    int intialAverageBaseline;
+    int initialAverageBaseline;
     QTimer* therapyTimer;
     QTimer* pauseTimer;
     bool sessionInProgress;

@@ -7,14 +7,15 @@ Neureset::Neureset(QObject *parent) : beeping(false), time(QDateTime::currentDat
         sites[i] = new EEGSite();
     }
 
-    intialAverageBaseline = -1;
+    initialAverageBaseline = -1;
 
     for (int i = 0 ; i < NUM_LIGHTS/3; i = i+3){
         lights[i] = new Light("blue");
         lights[i+1] = new Light("green");
         lights[i+2] = new Light("red");
     }
-
+    therapyTimer = new QTimer(this);
+    connect(therapyTimer, &QTimer::timeout, this, &Neureset::processNextSite);
 }
 
 Neureset::~Neureset() {
@@ -27,26 +28,27 @@ Neureset::~Neureset() {
         delete lights[i+1];
         delete lights[i+2];
     }
+    delete therapyTimer;;
 }
 
 void Neureset::newSession(){
-    if (therapyTimer){
+    if (therapyTimer->isActive()){
         therapyTimer->stop();
-        delete therapyTimer;
     }
-    
     calculateBaseline();
 
     Session* session = new Session();
-    session->startBaseline = this->intialAverageBaseline;
+    session->startBaseline = this->initialAverageBaseline;
     session->dateTime = QDateTime::currentDateTime();
     sessions.push_back(session);
 
 
-    therapyTimer = new QTimer(this);
-    connect(therapyTimer, &QTimer::timeout, this, &Neureset::processNextSite);
-    therapyTimer->start(1000);
+    //therapyTimer->start(1000);
     currentSiteIndex = 0;
+    while(currentSiteIndex < NUM_SITES){
+        processNextSite();
+    }
+    finishSession();
 }
 
 void Neureset::pauseSession(){
@@ -98,23 +100,19 @@ void Neureset::finishSession(){
         sessions.back()->endBaseline = finalAverageBaseline;
     }
 
+    qInfo() << "End baseline" << finalAverageBaseline;
+
     // Stop the therapy timer
-    if (therapyTimer){
+    if (therapyTimer->isActive()){
         therapyTimer->stop();
-        delete therapyTimer;
-        therapyTimer = nullptr;
     }
 }
 
 void Neureset::processNextSite(){
-    if (currentSiteIndex < NUM_SITES){
         // Process the current site
         sites[currentSiteIndex]->calculateSiteBaseline();
         sites[currentSiteIndex]->applyTreatment();
         currentSiteIndex++;
-    } else {
-        finishSession();
-    }
 }
 
 void Neureset::changeDateTime(QDateTime newTime){
@@ -150,11 +148,13 @@ void Neureset::calculateBaseline(){
     }
 
     // Calculate average baseline across EEG
-    intialAverageBaseline = 0;
+    initialAverageBaseline = 0;
     for (int i = 0; i < NUM_SITES; i++){
-        intialAverageBaseline += sites[i]->getBaseline();
+        initialAverageBaseline += sites[i]->getBaseline();
     }
-    intialAverageBaseline /= NUM_SITES;
+    initialAverageBaseline /= NUM_SITES;
+
+    qInfo()  << "average initial" << initialAverageBaseline;
 }
 
 void Neureset::notify(QString message){

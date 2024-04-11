@@ -7,6 +7,10 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
+    neureset.newSession();
+    qInfo() << neureset.sessionLog().back()->startBaseline;
+    qInfo() << neureset.sessionLog().back()->endBaseline;
+
 
     // set default label background to clear and other elements to invisible
     ui->new_session->setStyleSheet("background-color: #FFFFFF");
