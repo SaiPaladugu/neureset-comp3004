@@ -63,7 +63,7 @@ void MainWindow::onSelectPressed()
 void MainWindow::highlightCurrentSelection()
 {
     if (currentDisplay != Menu) {
-        return; // no highlighting in other menus
+        return; // no highlighting in other menus (currently)
     }
 
     ui->new_session->setStyleSheet("background-color: #FFFFFF");
