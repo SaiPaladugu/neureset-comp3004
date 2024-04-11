@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <string>
+#include <QtConcurrent/QtConcurrent>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow), currentSelection(NewSession), currentDisplay(Menu)
@@ -24,7 +25,8 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->menu, &QPushButton::clicked, this, [=]() {
         this->changeDisplay(MainWindow::Menu);
     });
-
+    connect(ui->pause, &QPushButton::clicked, this, &MainWindow::pauseSession);
+    connect(ui->start, &QPushButton::clicked, this, &MainWindow::startSession);
 }
 
 MainWindow::~MainWindow()
@@ -82,6 +84,16 @@ void MainWindow::changeDisplay(MenuOption option)
 {
     currentDisplay = option;
     updateDisplay(option);
+}
+
+void MainWindow::pauseSession()
+{
+    neureset.pauseSession();
+}
+
+void MainWindow::startSession(){
+    if(neureset.isRunning()) neureset.unpauseSession();
+    else QtConcurrent::run(std::mem_fn(&Neureset::newSession), &neureset);
 }
 
 void MainWindow::updateDisplay(MenuOption option)

@@ -7,14 +7,16 @@ Neureset::Neureset(QObject *parent) : beeping(false), time(QDateTime::currentDat
         sites[i] = new EEGSite();
     }
 
-    intialAverageBaseline = -1;
+    initialAverageBaseline = -1;
 
     for (int i = 0 ; i < NUM_LIGHTS/3; i = i+3){
         lights[i] = new Light("blue");
         lights[i+1] = new Light("green");
         lights[i+2] = new Light("red");
     }
+    paused = true;
 
+    sessions = importSessionData("sessions_data.txt");
 }
 
 Neureset::~Neureset() {
@@ -30,55 +32,40 @@ Neureset::~Neureset() {
 }
 
 void Neureset::newSession(){
-    if (therapyTimer){
-        therapyTimer->stop();
-        delete therapyTimer;
-    }
-    
+    running = true;
+    if (paused == true) paused = false;
     calculateBaseline();
 
     Session* session = new Session();
-    session->startBaseline = this->intialAverageBaseline;
+    session->startBaseline = this->initialAverageBaseline;
     session->dateTime = QDateTime::currentDateTime();
     sessions.push_back(session);
 
 
-    therapyTimer = new QTimer(this);
-    connect(therapyTimer, &QTimer::timeout, this, &Neureset::processNextSite);
-    therapyTimer->start(1000);
+    //therapyTimer->start(1000);
     currentSiteIndex = 0;
+    while(currentSiteIndex < NUM_SITES && !paused){
+        processNextSite();
+    }
+    if (currentSiteIndex == NUM_SITES) finishSession();
 }
 
 void Neureset::pauseSession(){
-    if(therapyTimer){
-        therapyTimer->stop();
-    }
-
-     // Start a timer that will stop the session after 5 minute
-    pauseTimer = new QTimer(this);
-    connect(pauseTimer, &QTimer::timeout, this, &Neureset::stopSession);
-    pauseTimer->start(300000); 
+    paused = true;
 }
 
 void Neureset::unpauseSession(){
-    if(therapyTimer){
-        therapyTimer->start(1000);
-    }
+    paused = false;
 
-    // If the pause timer is running, stop it
-    if (pauseTimer){
-        pauseTimer->stop();
-        delete pauseTimer;
-        pauseTimer = nullptr;
+    while(currentSiteIndex < NUM_SITES && !paused){
+        processNextSite();
     }
+    if (currentSiteIndex == NUM_SITES) finishSession();
+
 }
 
 void Neureset::stopSession(){
- if (therapyTimer){
-        therapyTimer->stop();
-        delete therapyTimer;
-        therapyTimer = nullptr;
-    }
+    paused = true;
     if (!sessions.empty()){
         delete sessions.back();
         sessions.pop_back();
@@ -98,23 +85,15 @@ void Neureset::finishSession(){
         sessions.back()->endBaseline = finalAverageBaseline;
     }
 
-    // Stop the therapy timer
-    if (therapyTimer){
-        therapyTimer->stop();
-        delete therapyTimer;
-        therapyTimer = nullptr;
-    }
+    qInfo() << "End baseline" << finalAverageBaseline;
+    running = false;
 }
 
 void Neureset::processNextSite(){
-    if (currentSiteIndex < NUM_SITES){
         // Process the current site
         sites[currentSiteIndex]->calculateSiteBaseline();
         sites[currentSiteIndex]->applyTreatment();
         currentSiteIndex++;
-    } else {
-        finishSession();
-    }
 }
 
 void Neureset::changeDateTime(QDateTime newTime){
@@ -150,11 +129,13 @@ void Neureset::calculateBaseline(){
     }
 
     // Calculate average baseline across EEG
-    intialAverageBaseline = 0;
+    initialAverageBaseline = 0;
     for (int i = 0; i < NUM_SITES; i++){
-        intialAverageBaseline += sites[i]->getBaseline();
+        initialAverageBaseline += sites[i]->getBaseline();
     }
-    intialAverageBaseline /= NUM_SITES;
+    initialAverageBaseline /= NUM_SITES;
+
+    qInfo()  << "average initial" << initialAverageBaseline;
 }
 
 void Neureset::notify(QString message){
@@ -162,10 +143,20 @@ void Neureset::notify(QString message){
 }
 
 
+bool Neureset::isRunning(){
+    return running;
+}
 
 
-bool Neureset::exportSessionData(const QString& filepath, const QVector<Session*>& sessions){
-    QFile file(filepath);
+bool Neureset::exportSessionData(const QString& filename, const QVector<Session*>& sessions){
+    qDebug()<<"In export";
+    qDebug() << "Current working directory:" << QDir::currentPath();
+    QString sourceDir = SOURCE_DIR;
+    QString relativeFilePath = sourceDir + '/' + filename;
+    qDebug()<<relativeFilePath;
+
+    QFile::remove(relativeFilePath);
+    QFile file(relativeFilePath);
     if(!file.open(QIODevice::WriteOnly | QIODevice::Text)){
         qWarning() << "Could not open file for writing";
         return false;
@@ -174,6 +165,7 @@ bool Neureset::exportSessionData(const QString& filepath, const QVector<Session*
     QTextStream out(&file);
     for (const Session* session : sessions){
         if (session){
+            qDebug()<<"Exporting"<<session->startBaseline;
             out << session->startBaseline <<",";
             out << session->endBaseline <<",";
             out << session->progress <<",";
@@ -185,9 +177,12 @@ bool Neureset::exportSessionData(const QString& filepath, const QVector<Session*
     return true;
 }
 
-QVector<Session*> Neureset::importSessionData(const QString& filepath){
+QVector<Session*> Neureset::importSessionData(const QString& filename){
     QVector<Session*> sessions;
-    QFile file(filepath);
+
+    QString relativeFilePath = SOURCE_DIR + '/' + filename;
+    qDebug()<<relativeFilePath;
+    QFile file(relativeFilePath);
     if(!file.open(QIODevice::ReadOnly | QIODevice::Text)){
         qWarning() << "Could not open file for reading";
         return sessions;
