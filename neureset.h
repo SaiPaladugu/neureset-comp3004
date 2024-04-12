@@ -64,7 +64,7 @@ public:
     int incrementTimer;
 
 signals:
-    void lightChanged();
+    void lightChanged(int);
 
 public slots:
     void stopSession();

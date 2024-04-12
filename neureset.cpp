@@ -46,7 +46,7 @@ void Neureset::newSession(){
     running = true;
     if (paused == true) paused = false;
     lights[0]->changeLight("ON");
-    emit lightChanged();
+    emit lightChanged(0);
     calculateBaseline();
 
     curSession = new Session();
@@ -127,13 +127,12 @@ void Neureset::processNextSite(){
         // Process the current site
         notify("Calculating site baseline");
         lights[2]->changeLight("ON");
-        emit lightChanged();
-        notify("Treatment applied");
-        lights[2]->changeLight("OFF");
-        emit lightChanged();
         sites.at(currentSiteIndex)->calculateSiteBaseline();
+        emit lightChanged(1);
         sites.at(currentSiteIndex)->applyTreatment();
-        qInfo() << "Current site" << currentSiteIndex;
+        lights[2]->changeLight("OFF");
+        notify("Treatment applied");
+        emit lightChanged(4);
         currentSiteIndex++;
 }
 
