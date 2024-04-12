@@ -105,6 +105,9 @@ void MainWindow::highlightCurrentSelection()
 
 void MainWindow::changeDisplay(MenuOption option)
 {
+    if(neureset->isRunning() && currentDisplay == NewSession) {
+        stopSession();
+    }
     currentDisplay = option;
     updateDisplay(option);
 }
@@ -181,46 +184,39 @@ void MainWindow::lightChange(int light){
     }
 }
 
+void MainWindow::resetLight() {
+    ui->light_1->setStyleSheet("background-color: #FFFFFF");
+    ui->light_2->setStyleSheet("background-color: #FFFFFF");
+    ui->light_3->setStyleSheet("background-color: #FFFFFF");
+}
+
 void MainWindow::updateDisplay(MenuOption option)
 {
+    resetLight();
+    ui->new_session->setVisible(false);
+    ui->session_log->setVisible(false);
+    ui->time_date->setVisible(false);
+    ui->timer->setVisible(false);
+    ui->session_progress->setVisible(false);
+    ui->dateTimeEdit->setVisible(false);
+    ui->session_log_data->setVisible(false);
+    ui->start->setEnabled(false);
+    ui->stop->setEnabled(false);
+    ui->pause->setEnabled(false);
     if (option == NewSession) {
         startNeuresetSession();
         // timer and progress bar as specs indicate (+ wtv else we want)
-        ui->new_session->setVisible(false);
-        ui->session_log->setVisible(false);
-        ui->time_date->setVisible(false);
         ui->timer->setVisible(true);
         ui->session_progress->setVisible(true);
-        ui->dateTimeEdit->setVisible(false);
-        ui->session_log_data->setVisible(false);
         ui->start->setEnabled(true);
         ui->stop->setEnabled(true);
         ui->pause->setEnabled(true);
     } else if (option == SessionLog) {
         updateSessionLogDisplay();
-        // uhh not sure yet smtn to do w the DB file
-        ui->new_session->setVisible(false);
-        ui->session_log->setVisible(false);
-        ui->time_date->setVisible(false);
-        ui->timer->setVisible(false);
-        ui->session_progress->setVisible(false);
-        ui->dateTimeEdit->setVisible(false);
         ui->session_log_data->setVisible(true);
-        ui->start->setEnabled(false);
-        ui->stop->setEnabled(false);
-        ui->pause->setEnabled(false);
     } else if (option == TimeDate) {
         updateDateTimeDisplay();
-        ui->new_session->setVisible(false);
-        ui->session_log->setVisible(false);
-        ui->time_date->setVisible(false);
-        ui->timer->setVisible(false);
-        ui->session_progress->setVisible(false);
         ui->dateTimeEdit->setVisible(true);
-        ui->session_log_data->setVisible(false);
-        ui->start->setEnabled(false);
-        ui->stop->setEnabled(false);
-        ui->pause->setEnabled(false);
     } else {
         // default menu display (same as constructor)
         // set default label background to clear and other elements to invisible
@@ -229,13 +225,6 @@ void MainWindow::updateDisplay(MenuOption option)
         ui->time_date->setVisible(true);
         ui->session_log->setStyleSheet("background-color: #FFFFFF");
         ui->time_date->setStyleSheet("background-color: #FFFFFF");
-        ui->timer->setVisible(false);
-        ui->session_progress->setVisible(false);
-        ui->dateTimeEdit->setVisible(false);
-        ui->session_log_data->setVisible(false);
-        ui->start->setEnabled(false);
-        ui->stop->setEnabled(false);
-        ui->pause->setEnabled(false);
 
         // setting first option, new_session, to be chosen and yellow as default
         ui->new_session->setStyleSheet("background-color: #FFFF00");
