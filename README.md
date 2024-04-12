@@ -1,28 +1,29 @@
-1. Team members
-   William Zhu
-   Nathan El-Khoury
-   Sai Paladugu
-2. What each member did
-   Will 
-     - EEGSite class
-     - Light class
-     - Mediator class
-     - Normal use case
-     - Normal success sequence diagram outline
-     - UML Class diagram
-   Nathan
-     - Neureset Class
-     - Session Class
-     - Use cases 2 - 6
-   Sai 
-     - MainWindow Class
-     - MainWindow Ui/Front-End
-     - Traceability matrix
-3. Organization of the submission.
-   - Diagrams
-     - UML Class Diagram
-   - Weekly Reports
-     - Deprecated folder, will be removed soon
-   - Source files are scattered in the repo for now,
-     they are organized in QT Creator, will reformat
-     source files after completion.
+## Team Members
+- **William Zhu**
+- **Nathan El-Khoury**
+- **Sai Paladugu**
+
+## Contributions
+- **William Zhu**
+  - Implemented `EEGSite` class
+  - Developed `Light` class
+  - Worked on `Mediator` class
+  - Created normal use case and success sequence diagram outline
+  - Designed UML Class diagram
+- **Nathan El-Khoury**
+  - Developed `Neureset` Class
+  - Implemented `Session` Class
+  - Defined use cases 2 through 6
+- **Sai Paladugu**
+  - Created `MainWindow` Class
+  - Developed MainWindow UI/Front-End
+  - Compiled the Traceability matrix
+
+## Organization of the Submission
+- **Diagrams**
+  - UML Class Diagram
+- **Weekly Reports**
+  - Note: The `Deprecated` folder will be removed soon.
+- **Source Files**
+  - Currently scattered in the repository; they are organized within QT Creator. 
+  - Plan to reformat source files after project completion.
