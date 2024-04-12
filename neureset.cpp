@@ -128,12 +128,11 @@ void Neureset::processNextSite(){
         notify("Calculating site baseline");
         lights[2]->changeLight("ON");
         emit lightChanged();
+        sites.at(currentSiteIndex)->calculateSiteBaseline();
         notify("Treatment applied");
         lights[2]->changeLight("OFF");
         emit lightChanged();
-        sites.at(currentSiteIndex)->calculateSiteBaseline();
         sites.at(currentSiteIndex)->applyTreatment();
-        qInfo() << "Current site" << currentSiteIndex;
         currentSiteIndex++;
 }
 
