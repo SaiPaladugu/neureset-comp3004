@@ -3,6 +3,9 @@
 - **Nathan El-Khoury**
 - **Sai Paladugu**
 
+## DOCS
+https://docs.google.com/document/d/1GpYElQYB_-NQNbzPbXPtMN7D7WCOxLkb_UZmLV_W55Y/edit?usp=sharing
+
 ## Contributions
 - **William Zhu**
   - Implemented `EEGSite` class
