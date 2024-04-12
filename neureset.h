@@ -37,6 +37,8 @@ private:
     bool sessionPaused;
     int currentSiteIndex;
     bool running;
+
+    Session* curSession;
     
 
 public:
@@ -59,6 +61,8 @@ public:
 
     bool isRunning();
     bool isPaused();
+
+    void siteProcessing();
 
 public slots:
     void stopSession();
