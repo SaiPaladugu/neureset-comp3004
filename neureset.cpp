@@ -26,6 +26,8 @@ Neureset::Neureset(QObject *parent) : beeping(false), time(QDateTime::currentDat
 
     pauseTimer = new QTimer(this);
     curSession = nullptr;
+
+    connect(pauseTimer, &QTimer::timeout, this, &Neureset::stopSession);
 }
 
 Neureset::~Neureset() {
@@ -66,8 +68,7 @@ void Neureset::pauseSession(){
         pauseTimer->stop();
     }
 
-    connect(pauseTimer, &QTimer::timeout, this, &Neureset::stopSession);
-    pauseTimer->start(2000);
+    pauseTimer->start(10000);
 }
 
 void Neureset::unpauseSession(){
@@ -91,6 +92,8 @@ void Neureset::siteProcessing(){
 }
 
 void Neureset::stopSession(){
+    //Only output this if session is still running
+    //Add isRunning check?
     qDebug()<<"Stopping session, most recent session will not be saved";
     paused = true;
     running = false;
@@ -100,6 +103,7 @@ void Neureset::stopSession(){
         delete curSession;
         curSession = nullptr;
     }
+    emit stop();
 }
 
 void Neureset::finishSession(){
@@ -121,16 +125,17 @@ void Neureset::finishSession(){
     paused = false;
     curSession = nullptr;
     qDebug()<<"Session finished and saved.";
+    emit stop();
 }
 
 void Neureset::processNextSite(){
         // Process the current site
         notify("Calculating site baseline");
-        lights[2]->changeLight("ON");
+        lights[1]->changeLight("ON");
         sites.at(currentSiteIndex)->calculateSiteBaseline();
         emit lightChanged(1);
         sites.at(currentSiteIndex)->applyTreatment();
-        lights[2]->changeLight("OFF");
+        lights[1]->changeLight("OFF");
         notify("Treatment applied");
         emit lightChanged(4);
         currentSiteIndex++;
@@ -145,14 +150,15 @@ QVector<Session*>& Neureset::sessionLog(){
     return sessions;
 }
 
-void Neureset::beep(){
-    // TODO: Figure what this is for, maybe below is a implementation for it
-    if (!beeping){
+void Neureset::beepFlash(){
+    QTimer::singleShot(1000, this, &Neureset::beepFlash);
+    if (!beeping && running == true){
         beeping = true;
         qInfo() << "Beep!";
-        QTimer::singleShot(1000, this, &Neureset::beep);
+        emit lightChanged(2);
     } else {
         beeping = false;
+        emit lightChanged(5);
     }
 }
 
@@ -184,6 +190,15 @@ bool Neureset::isRunning(){
 
 bool Neureset::isPaused(){
     return paused;
+}
+
+void Neureset::contactLostProtocol(){
+    notify("Contact lost");
+    emit pause();
+    lights[2]->changeLight("FLASHING");
+    lights[0]->changeLight("OFF");
+    emit lightChanged(3);
+    beepFlash();
 }
 
 bool Neureset::exportSessionData(const QString& filename, const QVector<Session*>& sessions){
