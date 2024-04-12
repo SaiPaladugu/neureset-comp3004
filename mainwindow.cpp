@@ -6,6 +6,7 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow), currentSelection(NewSession), currentDisplay(Menu), timer(new QTimer(this))
 {
+    powerStatus = true;
     ui->setupUi(this);
 
     neureset = new Neureset();
@@ -48,12 +49,14 @@ MainWindow::MainWindow(QWidget *parent)
 
     // new session timer
     connect(timer, &QTimer::timeout, this, &MainWindow::updateTimer);
-
     connect(neureset, &Neureset::stop, this, &MainWindow::stop);
 
     //Contact lost button
     connect(ui->contact_lost, &QPushButton::clicked, this, &MainWindow::contactLost);
     connect(neureset, &Neureset::pause, this, &MainWindow::pauseSession);
+
+    // power
+    connect(ui->power, &QPushButton::clicked, this, &MainWindow::onPowerButtonClicked);
 }
 
 MainWindow::~MainWindow()
@@ -147,17 +150,36 @@ void MainWindow::stopSession(){
     ui->timer->setTime(time);
     timer->stop();
     changeDisplay(Menu);
+    ui->session_progress->setValue(0);
 }
 
 void MainWindow::updateTimer() {
     QTime currentTime = ui->timer->time();
+    int currentSeconds = QTime(0, 0, 0).secsTo(currentTime);
     int seconds = QTime(0, 0, 0).secsTo(currentTime);
     if (seconds > 1) {
         currentTime = currentTime.addSecs(-1);
         ui->timer->setTime(currentTime);
+        int elapsedSeconds = totalDurationInSeconds - currentSeconds;
+        ui->session_progress->setValue(elapsedSeconds);
     } else {
         timer->stop();
         stopSession();
+
+        int newBatteryLevel = ui->battery->value() - 50;
+        if (newBatteryLevel < 0) newBatteryLevel = 0;
+        ui->battery->setValue(newBatteryLevel);
+        if (newBatteryLevel == 0) {
+            powerStatus = true;
+            onPowerButtonClicked();
+            disableAll();
+            disableSafety();
+            ui->power->setEnabled(false);
+            ui->menu->setEnabled(false);
+            ui->up_arrow->setEnabled(false);
+            ui->down_arrow->setEnabled(false);
+            ui->select->setEnabled(false);
+        }
     }
 }
 
@@ -207,16 +229,7 @@ void MainWindow::stop(){
 void MainWindow::updateDisplay(MenuOption option)
 {
     resetLight();
-    ui->new_session->setVisible(false);
-    ui->session_log->setVisible(false);
-    ui->time_date->setVisible(false);
-    ui->timer->setVisible(false);
-    ui->session_progress->setVisible(false);
-    ui->dateTimeEdit->setVisible(false);
-    ui->session_log_data->setVisible(false);
-    ui->start->setEnabled(false);
-    ui->stop->setEnabled(false);
-    ui->pause->setEnabled(false);
+    disableAll();
     if (option == NewSession) {
         startNeuresetSession();
         // timer and progress bar as specs indicate (+ wtv else we want)
@@ -272,12 +285,44 @@ void MainWindow::updateSessionLogDisplay()
 void MainWindow::startNeuresetSession()
 {
     int seconds = 7 + (neureset->incrementTimer + 1) * 7;
+    totalDurationInSeconds = seconds;
     int minutes = seconds / 60;
     int remainingSeconds = seconds % 60;
     QTime time(0, minutes, remainingSeconds);
     ui->timer->setTime(time);
+
+    ui->session_progress->setMaximum(totalDurationInSeconds);
+    ui->session_progress->setValue(0);
 }
 
+void MainWindow::disableSafety() {
+    ui->contact_lost->setEnabled(false);
+    ui->contact->setEnabled(false);
+    ui->treatment->setEnabled(false);
+}
+
+void MainWindow::disableAll() {
+    ui->new_session->setVisible(false);
+    ui->session_log->setVisible(false);
+    ui->time_date->setVisible(false);
+    ui->timer->setVisible(false);
+    ui->session_progress->setVisible(false);
+    ui->dateTimeEdit->setVisible(false);
+    ui->session_log_data->setVisible(false);
+    ui->start->setEnabled(false);
+    ui->stop->setEnabled(false);
+    ui->pause->setEnabled(false);
+}
+
+void MainWindow::onPowerButtonClicked() {
+    if (powerStatus == true) {
+        disableAll();
+        powerStatus = false;
+    } else if (powerStatus == false) {
+        changeDisplay(Menu);
+        powerStatus = true;
+    }
+}
 
 
 
