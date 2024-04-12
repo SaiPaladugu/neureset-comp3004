@@ -32,6 +32,9 @@ Neureset::~Neureset() {
 }
 
 void Neureset::newSession(){
+    if (isRunning()){
+        return;
+    }
     running = true;
     if (paused == true) paused = false;
     calculateBaseline();
@@ -145,6 +148,10 @@ void Neureset::notify(QString message){
 
 bool Neureset::isRunning(){
     return running;
+}
+
+bool Neureset::isPaused(){
+    return paused;
 }
 
 

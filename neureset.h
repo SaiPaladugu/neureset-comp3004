@@ -58,6 +58,7 @@ public:
     virtual QVector<Session*> importSessionData(const QString& filename);
 
     bool isRunning();
+    bool isPaused();
 
 public slots:
     void stopSession();
