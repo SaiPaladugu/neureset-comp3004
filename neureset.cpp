@@ -129,10 +129,10 @@ void Neureset::processNextSite(){
         lights[2]->changeLight("ON");
         emit lightChanged();
         sites.at(currentSiteIndex)->calculateSiteBaseline();
+        sites.at(currentSiteIndex)->applyTreatment();
         notify("Treatment applied");
         lights[2]->changeLight("OFF");
         emit lightChanged();
-        sites.at(currentSiteIndex)->applyTreatment();
         currentSiteIndex++;
 }
 
