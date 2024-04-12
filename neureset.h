@@ -35,6 +35,9 @@ private:
     int currentSiteIndex;
     bool running;
 
+    Session* curSession;
+    
+
 public:
     Neureset(QObject *parent = nullptr);
     ~Neureset();
@@ -54,6 +57,9 @@ public:
     virtual QVector<Session*> importSessionData(const QString& filename);
 
     bool isRunning();
+    bool isPaused();
+
+    void siteProcessing();
 
 signals:
     void lightChanged();

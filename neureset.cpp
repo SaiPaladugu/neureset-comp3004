@@ -21,6 +21,9 @@ Neureset::Neureset(QObject *parent) : beeping(false), time(QDateTime::currentDat
     for (Session* session : importedSessions){
         sessions.append(session);
     }
+
+    pauseTimer = new QTimer(this);
+    curSession = nullptr;
 }
 
 Neureset::~Neureset() {
@@ -35,45 +38,65 @@ Neureset::~Neureset() {
 }
 
 void Neureset::newSession(){
+    if (isRunning()){
+        return;
+    }
     running = true;
     if (paused == true) paused = false;
     lights[0]->changeLight("ON");
     emit lightChanged();
     calculateBaseline();
 
-    Session* session = new Session();
-    session->startBaseline = this->initialAverageBaseline;
-    session->dateTime = QDateTime::currentDateTime();
-    sessions.push_back(session);
+    curSession = new Session();
+    curSession->startBaseline = this->initialAverageBaseline;
+    curSession->dateTime = QDateTime::currentDateTime();
 
-
-    //therapyTimer->start(1000);
     currentSiteIndex = 0;
-    while(currentSiteIndex < NUM_SITES && !paused){
-        processNextSite();
-    }
-    if (currentSiteIndex == NUM_SITES) finishSession();
+    siteProcessing();
 }
 
 void Neureset::pauseSession(){
+    if(!running) return;
+
     paused = true;
+
+    if (pauseTimer->isActive()) {
+        pauseTimer->stop();
+    }
+
+    connect(pauseTimer, &QTimer::timeout, this, &Neureset::stopSession);
+    pauseTimer->start(2000);
 }
 
 void Neureset::unpauseSession(){
-    paused = false;
+    if(!running) return;
 
+    if(paused){
+            paused = false;
+            pauseTimer->stop();
+        }
+
+    siteProcessing();
+}
+
+void Neureset::siteProcessing(){
     while(currentSiteIndex < NUM_SITES && !paused){
         processNextSite();
     }
-    if (currentSiteIndex == NUM_SITES) finishSession();
-
+    if (currentSiteIndex == NUM_SITES) {
+      finishSession();
+    }
 }
 
 void Neureset::stopSession(){
+    qDebug()<<"Stopping session, most recent session will not be saved";
     paused = true;
-    if (!sessions.empty()){
-        delete sessions.back();
-        sessions.pop_back();
+    running = false;
+    if(pauseTimer->isActive()) pauseTimer->stop();
+
+    if (curSession != nullptr){
+        delete curSession;
+        curSession = nullptr;
     }
 }
 
@@ -86,12 +109,16 @@ void Neureset::finishSession(){
     finalAverageBaseline /= NUM_SITES;
 
     // Set the endBaseline of the current session
+    sessions.append(curSession);
     if (!sessions.empty()){
         sessions.back()->endBaseline = finalAverageBaseline;
     }
 
     qInfo() << "End baseline" << finalAverageBaseline;
     running = false;
+    paused = false;
+    curSession = nullptr;
+    qDebug()<<"Session finished and saved.";
 }
 
 void Neureset::processNextSite(){
@@ -158,6 +185,11 @@ void Neureset::notify(QString message){
 
 bool Neureset::isRunning(){
     return running;
+}
+
+
+bool Neureset::isPaused(){
+    return paused;
 }
 
 bool Neureset::exportSessionData(const QString& filename, const QVector<Session*>& sessions){
