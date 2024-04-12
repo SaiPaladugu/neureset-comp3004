@@ -12,6 +12,7 @@ public:
     int calculateSiteBaseline();
     void applyTreatment();
     int getBaseline();
+    int incrementTimer;
 
 private:
     int siteBaseline;

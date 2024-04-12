@@ -61,6 +61,7 @@ public:
     bool isPaused();
 
     void siteProcessing();
+    int incrementTimer;
 
 signals:
     void lightChanged();

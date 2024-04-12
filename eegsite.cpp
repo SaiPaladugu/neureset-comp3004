@@ -3,6 +3,7 @@
 EEGSite::EEGSite()
 {
     siteBaseline = 0;
+    incrementTimer = 1;
 }
 EEGSite::~EEGSite(){}
 
@@ -44,7 +45,7 @@ int EEGSite::calculateSiteBaseline(){
         }
     }
 
-    QThread::sleep(1);
+    QThread::sleep(incrementTimer);
     siteBaseline = (frequencies[0] * amplitudes[0] + frequencies[1] * amplitudes[1] + frequencies[2] * amplitudes[2])/(amplitudes[0] + amplitudes[1] + amplitudes[2]);
     qInfo() << siteBaseline;
     return siteBaseline;
