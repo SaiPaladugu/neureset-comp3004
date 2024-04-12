@@ -10,15 +10,19 @@ CONFIG += c++11
 DEFINES += SOURCE_DIR=\\\"$$PWD\\\"
 
 SOURCES += \
+    light.cpp \
     main.cpp \
     mainwindow.cpp \
     eegsite.cpp \
+    mediator.cpp \
     neureset.cpp \
     session.cpp 
 
 HEADERS += \
+    light.h \
     mainwindow.h \
     eegsite.h \
+    mediator.h \
     neureset.h \
     session.h 
 

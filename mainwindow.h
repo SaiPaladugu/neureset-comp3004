@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <string>
+#include "neureset.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -21,6 +22,7 @@ public:
         TimeDate,
         Menu
     };
+    Neureset neureset;
 
     void updateDisplay(MenuOption option);
 
@@ -29,6 +31,8 @@ public slots:
     void onDownArrowPressed();
     void onSelectPressed();
     void changeDisplay(MenuOption option = Menu);
+    void pauseSession();
+    void startSession();
 
 private:
     Ui::MainWindow *ui;
