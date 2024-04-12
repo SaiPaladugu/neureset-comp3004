@@ -27,6 +27,7 @@ MainWindow::MainWindow(QWidget *parent)
     });
     connect(ui->pause, &QPushButton::clicked, this, &MainWindow::pauseSession);
     connect(ui->start, &QPushButton::clicked, this, &MainWindow::startSession);
+    connect(neureset, &Neureset::lightChanged, this, &MainWindow::lightChange);
 }
 
 MainWindow::~MainWindow()

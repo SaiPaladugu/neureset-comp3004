@@ -9,11 +9,10 @@ Neureset::Neureset(QObject *parent) : beeping(false), time(QDateTime::currentDat
 
     initialAverageBaseline = -1;
 
-    for (int i = 0 ; i < NUM_LIGHTS/3; i = i+3){
-        lights[i] = new Light("blue");
-        lights[i+1] = new Light("green");
-        lights[i+2] = new Light("red");
-    }
+    lights[NUM_LIGHTS-3] = new Light("blue");
+    lights[NUM_LIGHTS-2] = new Light("green");
+    lights[NUM_LIGHTS-1] = new Light("red");
+
     paused = true;
 
     sessions = importSessionData("sessions_data.txt");
@@ -34,6 +33,8 @@ Neureset::~Neureset() {
 void Neureset::newSession(){
     running = true;
     if (paused == true) paused = false;
+    lights[0]->changeLight("ON");
+    lightChanged();
     calculateBaseline();
 
     Session* session = new Session();
@@ -91,8 +92,13 @@ void Neureset::finishSession(){
 
 void Neureset::processNextSite(){
         // Process the current site
+        notify("Calculating site baseline");
         sites[currentSiteIndex]->calculateSiteBaseline();
+        lights[2]->changeLight("ON");
+        lightChanged();
         sites[currentSiteIndex]->applyTreatment();
+        notify("Treatmment applied");
+        lights[2]->changeLight("OFF");
         currentSiteIndex++;
 }
 
@@ -145,6 +151,10 @@ void Neureset::notify(QString message){
 
 bool Neureset::isRunning(){
     return running;
+}
+
+void Neureset::sendLightChanged(){
+    emit lightChanged();
 }
 
 

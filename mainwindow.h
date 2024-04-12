@@ -33,6 +33,7 @@ public slots:
     void changeDisplay(MenuOption option = Menu);
     void pauseSession();
     void startSession();
+    void lightChange();
 
 private:
     Ui::MainWindow *ui;

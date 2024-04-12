@@ -59,9 +59,13 @@ public:
 
     bool isRunning();
 
+signals:
+    void lightChanged();
+
 public slots:
     void stopSession();
     void processNextSite();
+    void sendLightChanged();
 };
 
 #endif // NERUSET_H

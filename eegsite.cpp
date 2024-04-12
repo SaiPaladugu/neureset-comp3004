@@ -54,8 +54,6 @@ void EEGSite::applyTreatment(){
         siteBaseline = siteBaseline + 5;
         QThread::msleep(63);
     }
-    //Confirmation message to be moved to neureset class using .notify
-    //qInfo() << "Treatment applied";
 }
 
 int EEGSite::getBaseline(){
