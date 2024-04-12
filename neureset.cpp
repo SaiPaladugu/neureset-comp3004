@@ -3,13 +3,12 @@
 Neureset::Neureset(QObject *parent)
     : beeping(false),
       time(QDateTime::currentDateTime()),
-      therapyTimer(new QTimer(this)),
       pauseTimer(new QTimer(this))
 {
     qInfo() << "Neureset created";
     // Create the eeg sites
     for (int i = 0 ; i < NUM_SITES; i++){
-        sites[i] = new EEGSite();
+        sites.append(new EEGSite());
     }
 
     initialAverageBaseline = -1;

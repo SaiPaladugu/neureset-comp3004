@@ -37,6 +37,7 @@ private:
     bool sessionPaused;
     int currentSiteIndex;
     bool running;
+    int battery;
     
 
 public:
