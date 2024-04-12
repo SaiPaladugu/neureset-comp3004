@@ -4,7 +4,7 @@
 #include <QtConcurrent/QtConcurrent>
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent), ui(new Ui::MainWindow), currentSelection(NewSession), currentDisplay(Menu)
+    : QMainWindow(parent), ui(new Ui::MainWindow), currentSelection(NewSession), currentDisplay(Menu), timer(new QTimer(this))
 {
     ui->setupUi(this);
 
@@ -26,17 +26,28 @@ MainWindow::MainWindow(QWidget *parent)
     // setting first option, new_session, to be highlighted yellow
     ui->new_session->setStyleSheet("background-color: #FFFF00");
 
-    // handling button selection
+    // handling display related button selection
     connect(ui->up_arrow, &QPushButton::clicked, this, &MainWindow::onUpArrowPressed);
     connect(ui->down_arrow, &QPushButton::clicked, this, &MainWindow::onDownArrowPressed);
     connect(ui->select, &QPushButton::clicked, this, &MainWindow::onSelectPressed);
     connect(ui->menu, &QPushButton::clicked, this, [=]() {
         this->changeDisplay(MainWindow::Menu);
     });
-    connect(ui->pause, &QPushButton::clicked, this, &MainWindow::pauseSession);
+
+    // handling neureset related buttons
     connect(ui->start, &QPushButton::clicked, this, &MainWindow::startSession);
+    connect(ui->pause, &QPushButton::clicked, this, &MainWindow::pauseSession);
+    connect(ui->stop, &QPushButton::clicked, this, &MainWindow::stopSession);
     connect(ui->dateTimeEdit, &QDateTimeEdit::dateTimeChanged, this, &MainWindow::updateDateTimeDisplay);
     connect(neureset, &Neureset::lightChanged, this, &MainWindow::lightChange);
+
+    // disable start/play/pause unless in new session
+    ui->start->setEnabled(false);
+    ui->stop->setEnabled(false);
+    ui->pause->setEnabled(false);
+
+    // new session timer
+    connect(timer, &QTimer::timeout, this, &MainWindow::updateTimer);
 }
 
 MainWindow::~MainWindow()
@@ -97,18 +108,47 @@ void MainWindow::changeDisplay(MenuOption option)
     updateDisplay(option);
 }
 
+void MainWindow::startSession(){
+    if(neureset->isRunning()) {
+        neureset->unpauseSession();
+        timer->start(1000);  // continue the countdown
+    } else {
+        // if not already running, start new timer
+        QtConcurrent::run(std::mem_fn(&Neureset::newSession), neureset);
+        int seconds = (neureset->incrementTimer + 1) * 7;
+        int minutes = seconds / 60;
+        int remainingSeconds = seconds % 60;
+        QTime startTime(0, minutes, remainingSeconds);
+        ui->timer->setTime(startTime);
+        timer->start(1000);
+    }
+}
+
+
 void MainWindow::pauseSession()
 {
     neureset->pauseSession();
-}
-
-void MainWindow::startSession(){
-    if(neureset->isRunning()) neureset->unpauseSession();
-    else QtConcurrent::run(std::mem_fn(&Neureset::newSession), neureset);
+    timer->stop();
 }
 
 void MainWindow::stopSession(){
-    // logic
+    neureset->stopSession();
+    QTime time(0, 0, 0);
+    ui->timer->setTime(time);
+    timer->stop();
+    changeDisplay(Menu);
+}
+
+void MainWindow::updateTimer() {
+    QTime currentTime = ui->timer->time();
+    int seconds = QTime(0, 0, 0).secsTo(currentTime);
+    if (seconds > 1) {
+        currentTime = currentTime.addSecs(-1);
+        ui->timer->setTime(currentTime);
+    } else {
+        timer->stop();
+        stopSession();
+    }
 }
 
 void MainWindow::lightChange(){
@@ -119,6 +159,7 @@ void MainWindow::lightChange(){
 void MainWindow::updateDisplay(MenuOption option)
 {
     if (option == NewSession) {
+        startNeuresetSession();
         // timer and progress bar as specs indicate (+ wtv else we want)
         ui->new_session->setVisible(false);
         ui->session_log->setVisible(false);
@@ -127,6 +168,9 @@ void MainWindow::updateDisplay(MenuOption option)
         ui->session_progress->setVisible(true);
         ui->dateTimeEdit->setVisible(false);
         ui->session_log_data->setVisible(false);
+        ui->start->setEnabled(true);
+        ui->stop->setEnabled(true);
+        ui->pause->setEnabled(true);
     } else if (option == SessionLog) {
         updateSessionLogDisplay();
         // uhh not sure yet smtn to do w the DB file
@@ -137,6 +181,9 @@ void MainWindow::updateDisplay(MenuOption option)
         ui->session_progress->setVisible(false);
         ui->dateTimeEdit->setVisible(false);
         ui->session_log_data->setVisible(true);
+        ui->start->setEnabled(false);
+        ui->stop->setEnabled(false);
+        ui->pause->setEnabled(false);
     } else if (option == TimeDate) {
         updateDateTimeDisplay();
         ui->new_session->setVisible(false);
@@ -146,6 +193,9 @@ void MainWindow::updateDisplay(MenuOption option)
         ui->session_progress->setVisible(false);
         ui->dateTimeEdit->setVisible(true);
         ui->session_log_data->setVisible(false);
+        ui->start->setEnabled(false);
+        ui->stop->setEnabled(false);
+        ui->pause->setEnabled(false);
     } else {
         // default menu display (same as constructor)
         // set default label background to clear and other elements to invisible
@@ -158,6 +208,9 @@ void MainWindow::updateDisplay(MenuOption option)
         ui->session_progress->setVisible(false);
         ui->dateTimeEdit->setVisible(false);
         ui->session_log_data->setVisible(false);
+        ui->start->setEnabled(false);
+        ui->stop->setEnabled(false);
+        ui->pause->setEnabled(false);
 
         // setting first option, new_session, to be chosen and yellow as default
         ui->new_session->setStyleSheet("background-color: #FFFF00");
@@ -188,6 +241,14 @@ void MainWindow::updateSessionLogDisplay()
     }
 }
 
+void MainWindow::startNeuresetSession()
+{
+    int seconds = (neureset->incrementTimer + 1) * 7;
+    int minutes = seconds / 60;
+    int remainingSeconds = seconds % 60;
+    QTime time(0, minutes, remainingSeconds);
+    ui->timer->setTime(time);
+}
 
 
 

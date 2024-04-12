@@ -5,6 +5,8 @@
 #include <QDateTime>
 #include <string>
 #include "neureset.h"
+#include <QTimeEdit>
+#include <QTimer>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -43,8 +45,12 @@ private:
     void highlightCurrentSelection();
     void updateDateTimeDisplay();
     void updateSessionLogDisplay();
+    void startNeuresetSession();
+    void updateTimer();
 
     MenuOption currentSelection;
     MenuOption currentDisplay;
+
+    QTimer *timer;
 };
 #endif // MAINWINDOW_H

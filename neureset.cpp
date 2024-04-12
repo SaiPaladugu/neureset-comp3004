@@ -9,6 +9,7 @@ Neureset::Neureset(QObject *parent) : beeping(false), time(QDateTime::currentDat
 
     currentSiteIndex = 0;
     initialAverageBaseline = -1;
+    incrementTimer = 1;
 
     lights[0] = new Light("blue");
     lights[1] = new Light("green");
