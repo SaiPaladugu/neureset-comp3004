@@ -24,7 +24,7 @@ class Neureset : public QObject, public Mediator {
     Q_OBJECT
 private:
     QVector<Session*> sessions;
-    EEGSite* sites[NUM_SITES];
+    QVector<EEGSite*> sites;
     QDateTime time;
     bool beeping;
     Light* lights[NUM_LIGHTS];

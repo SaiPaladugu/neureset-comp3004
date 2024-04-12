@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QDateTime>
 #include <string>
 #include "neureset.h"
 
@@ -34,11 +35,14 @@ public slots:
     void pauseSession();
     void startSession();
     void lightChange();
+    void stopSession();
 
 private:
     Ui::MainWindow *ui;
+    QDateTime currentDateTime;
     void highlightCurrentSelection();
     void updateDateTimeDisplay();
+    void updateSessionLogDisplay();
 
     MenuOption currentSelection;
     MenuOption currentDisplay;

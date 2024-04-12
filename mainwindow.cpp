@@ -8,12 +8,20 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
+    Neureset* neureset;
+
     // set default label background to clear and other elements to invisible
     ui->new_session->setStyleSheet("background-color: #FFFFFF");
     ui->session_log->setStyleSheet("background-color: #FFFFFF");
     ui->time_date->setStyleSheet("background-color: #FFFFFF");
     ui->timer->setVisible(false);
     ui->session_progress->setVisible(false);
+    ui->session_log_data->setVisible(false);
+
+    // hide date and time initially but the values
+    ui->dateTimeEdit->setVisible(false);
+    currentDateTime = QDateTime::currentDateTime();
+    ui->dateTimeEdit->setDateTime(currentDateTime);
 
     // setting first option, new_session, to be highlighted yellow
     ui->new_session->setStyleSheet("background-color: #FFFF00");
@@ -27,6 +35,7 @@ MainWindow::MainWindow(QWidget *parent)
     });
     connect(ui->pause, &QPushButton::clicked, this, &MainWindow::pauseSession);
     connect(ui->start, &QPushButton::clicked, this, &MainWindow::startSession);
+    connect(ui->dateTimeEdit, &QDateTimeEdit::dateTimeChanged, this, &MainWindow::updateDateTimeDisplay);
     connect(neureset, &Neureset::lightChanged, this, &MainWindow::lightChange);
 }
 
@@ -97,6 +106,10 @@ void MainWindow::startSession(){
     else QtConcurrent::run(std::mem_fn(&Neureset::newSession), &neureset);
 }
 
+void MainWindow::stopSession(){
+    // logic
+}
+
 void MainWindow::updateDisplay(MenuOption option)
 {
     if (option == NewSession) {
@@ -106,21 +119,27 @@ void MainWindow::updateDisplay(MenuOption option)
         ui->time_date->setVisible(false);
         ui->timer->setVisible(true);
         ui->session_progress->setVisible(true);
+        ui->dateTimeEdit->setVisible(false);
+        ui->session_log_data->setVisible(false);
     } else if (option == SessionLog) {
+        updateSessionLogDisplay();
         // uhh not sure yet smtn to do w the DB file
         ui->new_session->setVisible(false);
         ui->session_log->setVisible(false);
         ui->time_date->setVisible(false);
         ui->timer->setVisible(false);
         ui->session_progress->setVisible(false);
+        ui->dateTimeEdit->setVisible(false);
+        ui->session_log_data->setVisible(true);
     } else if (option == TimeDate) {
-        // also not super sure
-        // is this just straight up just time n date??
+        updateDateTimeDisplay();
         ui->new_session->setVisible(false);
         ui->session_log->setVisible(false);
         ui->time_date->setVisible(false);
-        ui->timer->setVisible(true);
+        ui->timer->setVisible(false);
         ui->session_progress->setVisible(false);
+        ui->dateTimeEdit->setVisible(true);
+        ui->session_log_data->setVisible(false);
     } else {
         // default menu display (same as constructor)
         // set default label background to clear and other elements to invisible
@@ -131,19 +150,39 @@ void MainWindow::updateDisplay(MenuOption option)
         ui->time_date->setStyleSheet("background-color: #FFFFFF");
         ui->timer->setVisible(false);
         ui->session_progress->setVisible(false);
+        ui->dateTimeEdit->setVisible(false);
+        ui->session_log_data->setVisible(false);
 
         // setting first option, new_session, to be chosen and yellow as default
         ui->new_session->setStyleSheet("background-color: #FFFF00");
         currentSelection = NewSession;
     }
-
-    updateDateTimeDisplay(); // no clue what to do here ngl
 }
 
 void MainWindow::updateDateTimeDisplay()
 {
-    // logic
+    ui->dateTimeEdit->setDateTime(currentDateTime);
 }
+
+void MainWindow::updateSessionLogDisplay()
+{
+    // clear existing data and fetch the new data
+    ui->session_log_data->clear();
+    QVector<Session*>& sessions = neureset.sessionLog();
+
+    // appending logic
+    for (Session* session : sessions) {
+        if (session) {
+            QString sessionInfo = QString("Start Baseline: %1, End Baseline: %2, Date: %3")
+                                  .arg(session->startBaseline)
+                                  .arg(session->endBaseline)
+                                  .arg(session->dateTime.toString("yyyy-MM-dd hh:mm:ss"));
+            ui->session_log_data->addItem(sessionInfo);
+        }
+    }
+}
+
+
 
 
 

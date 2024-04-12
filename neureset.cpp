@@ -4,30 +4,32 @@ Neureset::Neureset(QObject *parent) : beeping(false), time(QDateTime::currentDat
     qInfo() << "Neureset created";
     // Create the eeg sites
     for (int i = 0 ; i < NUM_SITES; i++){
-        sites[i] = new EEGSite();
+        sites.append(new EEGSite());
     }
 
     initialAverageBaseline = -1;
 
-    lights[NUM_LIGHTS-3] = new Light("blue");
-    lights[NUM_LIGHTS-2] = new Light("green");
-    lights[NUM_LIGHTS-1] = new Light("red");
+    lights[0] = new Light("blue");
+    lights[1] = new Light("green");
+    lights[2] = new Light("red");
 
     paused = true;
 
-    sessions = importSessionData("sessions_data.txt");
+    QVector<Session*> importedSessions = importSessionData("sessions_data.txt");
+    for (Session* session : importedSessions){
+        sessions.append(session);
+    }
 }
 
 Neureset::~Neureset() {
     qInfo() << "Neureset destroyed";
     for (int i = 0; i < NUM_SITES; i++){
-        delete sites[i];
+        delete sites.at(i);
     }
-    for (int i = 0 ; i < NUM_LIGHTS/3; i = i+3){
-        delete lights[i];
-        delete lights[i+1];
-        delete lights[i+2];
-    }
+    // Deleting lights
+    delete lights[0];
+    delete lights[1];
+    delete lights[2];
 }
 
 void Neureset::newSession(){
@@ -99,6 +101,8 @@ void Neureset::processNextSite(){
         sites[currentSiteIndex]->applyTreatment();
         notify("Treatmment applied");
         lights[2]->changeLight("OFF");
+        sites.at(currentSiteIndex)->calculateSiteBaseline();
+        sites.at(currentSiteIndex)->applyTreatment();
         currentSiteIndex++;
 }
 
@@ -190,8 +194,9 @@ bool Neureset::exportSessionData(const QString& filename, const QVector<Session*
 QVector<Session*> Neureset::importSessionData(const QString& filename){
     QVector<Session*> sessions;
 
-    QString relativeFilePath = SOURCE_DIR + '/' + filename;
-    qDebug()<<relativeFilePath;
+    QString sourceDir = SOURCE_DIR;
+    QString relativeFilePath = sourceDir + '/' + filename;
+    qDebug()<<"Fetching data from: "<< relativeFilePath;
     QFile file(relativeFilePath);
     if(!file.open(QIODevice::ReadOnly | QIODevice::Text)){
         qWarning() << "Could not open file for reading";
