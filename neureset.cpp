@@ -17,6 +17,7 @@ Neureset::Neureset(QObject *parent) : beeping(false), time(QDateTime::currentDat
 
     beeping = false;
     paused = true;
+    running = false;
 
     QVector<Session*> importedSessions = importSessionData("sessions_data.txt");
     for (Session* session : importedSessions){
@@ -125,15 +126,14 @@ void Neureset::finishSession(){
 void Neureset::processNextSite(){
         // Process the current site
         notify("Calculating site baseline");
-        sites[currentSiteIndex]->calculateSiteBaseline();
         lights[2]->changeLight("ON");
         emit lightChanged();
-        sites[currentSiteIndex]->applyTreatment();
         notify("Treatment applied");
         lights[2]->changeLight("OFF");
         emit lightChanged();
         sites.at(currentSiteIndex)->calculateSiteBaseline();
         sites.at(currentSiteIndex)->applyTreatment();
+        qInfo() << "Current site" << currentSiteIndex;
         currentSiteIndex++;
 }
 
@@ -159,14 +159,8 @@ void Neureset::beep(){
 
 void Neureset::calculateBaseline(){
     // Calculate baselines
-    QFuture<void> futures[NUM_SITES];
     for (int i = 0; i < NUM_SITES; i++){
-        futures[i] = QtConcurrent::run(sites[i], &EEGSite::calculateSiteBaseline);
-    }
-
-    // Wait for all calculations to finish
-    for (int i = 0; i < NUM_SITES; i++){
-        futures[i].waitForFinished();
+        sites[i]->calculateSiteBaseline();
     }
 
     // Calculate average baseline across EEG

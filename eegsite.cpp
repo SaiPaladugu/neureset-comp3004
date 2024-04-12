@@ -45,7 +45,7 @@ int EEGSite::calculateSiteBaseline(){
         }
     }
 
-    QThread::sleep(incrementTimer);
+    QThread::msleep(875);
     siteBaseline = (frequencies[0] * amplitudes[0] + frequencies[1] * amplitudes[1] + frequencies[2] * amplitudes[2])/(amplitudes[0] + amplitudes[1] + amplitudes[2]);
     qInfo() << siteBaseline;
     return siteBaseline;
