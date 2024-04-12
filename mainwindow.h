@@ -23,7 +23,7 @@ public:
         TimeDate,
         Menu
     };
-    Neureset neureset;
+    Neureset* neureset;
 
     void updateDisplay(MenuOption option);
 

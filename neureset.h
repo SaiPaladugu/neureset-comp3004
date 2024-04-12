@@ -32,12 +32,8 @@ private:
     // new stuff to be added to UML
     int initialAverageBaseline;
     bool paused;
-    QTimer* pauseTimer;
-    bool sessionInProgress;
-    bool sessionPaused;
     int currentSiteIndex;
     bool running;
-    
 
 public:
     Neureset(QObject *parent = nullptr);
@@ -65,7 +61,6 @@ signals:
 public slots:
     void stopSession();
     void processNextSite();
-    void sendLightChanged();
 };
 
 #endif // NERUSET_H
