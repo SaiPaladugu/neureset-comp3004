@@ -32,6 +32,7 @@ private:
     bool sessionInProgress;
     bool sessionPaused;
     int currentSiteIndex;
+    int battery;
     
 
 public:
@@ -51,6 +52,9 @@ public:
 
     bool exportSessionData(const QString& filepath, const QVector<Session*>& sessions);
     QVector<Session*> importSessionData(const QString& filename);
+
+    int getBattery() const;
+    bool charge();
 
 public slots:
     void stopSession();

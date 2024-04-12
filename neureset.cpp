@@ -13,6 +13,7 @@ Neureset::Neureset(QObject *parent)
     }
 
     intialAverageBaseline = -1;
+    battery = 100;
 
 }
 
@@ -24,6 +25,9 @@ Neureset::~Neureset() {
 }
 
 void Neureset::newSession(){
+    if (battery <= 0){
+        return;
+    }
     if (therapyTimer){
         therapyTimer->stop();
         delete therapyTimer;
@@ -98,6 +102,9 @@ void Neureset::finishSession(){
         therapyTimer->stop();
         delete therapyTimer;
         therapyTimer = nullptr;
+    }
+    if (battery > 0){
+        battery -= 50;
     }
 }
 
@@ -217,4 +224,12 @@ QVector<Session*> Neureset::importSessionData(const QString& filepath){
 
     file.close();
     return sessions;
+}
+
+int Neureset::getBattery() const{
+    return this->battery;
+}
+
+bool Neureset::charge(){
+    this->battery = 100;
 }
