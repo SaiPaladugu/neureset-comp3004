@@ -41,6 +41,7 @@ public slots:
     void resetLight();
 
 private:
+    bool powerStatus;
     Ui::MainWindow *ui;
     QDateTime currentDateTime;
     void highlightCurrentSelection();
@@ -48,6 +49,10 @@ private:
     void updateSessionLogDisplay();
     void startNeuresetSession();
     void updateTimer();
+    void onPowerButtonClicked();
+    void disableAll();
+    void disableSafety();
+    int totalDurationInSeconds;
 
     MenuOption currentSelection;
     MenuOption currentDisplay;
