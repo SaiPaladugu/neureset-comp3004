@@ -39,6 +39,8 @@ public slots:
     void lightChange(int);
     void stopSession();
     void resetLight();
+    void contactLost();
+    void stop();
 
 private:
     bool powerStatus;

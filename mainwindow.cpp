@@ -49,6 +49,11 @@ MainWindow::MainWindow(QWidget *parent)
 
     // new session timer
     connect(timer, &QTimer::timeout, this, &MainWindow::updateTimer);
+    connect(neureset, &Neureset::stop, this, &MainWindow::stop);
+
+    //Contact lost button
+    connect(ui->contact_lost, &QPushButton::clicked, this, &MainWindow::contactLost);
+    connect(neureset, &Neureset::pause, this, &MainWindow::pauseSession);
 
     // power
     connect(ui->power, &QPushButton::clicked, this, &MainWindow::onPowerButtonClicked);
@@ -211,6 +216,14 @@ void MainWindow::resetLight() {
     ui->light_1->setStyleSheet("background-color: #FFFFFF");
     ui->light_2->setStyleSheet("background-color: #FFFFFF");
     ui->light_3->setStyleSheet("background-color: #FFFFFF");
+}
+
+void MainWindow::contactLost(){
+    neureset->contactLostProtocol();
+}
+
+void MainWindow::stop(){
+    changeDisplay(Menu);
 }
 
 void MainWindow::updateDisplay(MenuOption option)

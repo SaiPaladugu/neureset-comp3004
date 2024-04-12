@@ -50,7 +50,7 @@ public:
     // void stopSession();
     void changeDateTime(QDateTime newTime);
     virtual QVector<Session*>& sessionLog();
-    void beep();
+    void beepFlash();
     virtual void calculateBaseline();
     void notify(QString message);
 
@@ -62,9 +62,12 @@ public:
 
     void siteProcessing();
     int incrementTimer;
+    void contactLostProtocol();
 
 signals:
     void lightChanged(int);
+    void pause();
+    void stop();
 
 public slots:
     void stopSession();
