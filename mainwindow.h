@@ -38,6 +38,7 @@ public slots:
     void startSession();
     void lightChange();
     void stopSession();
+    void resetLight();
 
 private:
     Ui::MainWindow *ui;
