@@ -32,12 +32,8 @@ private:
     // new stuff to be added to UML
     int initialAverageBaseline;
     bool paused;
-    QTimer* pauseTimer;
-    bool sessionInProgress;
-    bool sessionPaused;
     int currentSiteIndex;
     bool running;
-    
 
 public:
     Neureset(QObject *parent = nullptr);
@@ -58,6 +54,9 @@ public:
     virtual QVector<Session*> importSessionData(const QString& filename);
 
     bool isRunning();
+
+signals:
+    void lightChanged();
 
 public slots:
     void stopSession();
