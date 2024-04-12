@@ -57,6 +57,11 @@ MainWindow::MainWindow(QWidget *parent)
 
     // power
     connect(ui->power, &QPushButton::clicked, this, &MainWindow::onPowerButtonClicked);
+
+    // safety
+    ui->treatment->setEnabled(false);
+    ui->contact->setEnabled(false);
+    ui->contact_lost->setEnabled(false);
 }
 
 MainWindow::~MainWindow()
@@ -238,6 +243,9 @@ void MainWindow::updateDisplay(MenuOption option)
         ui->start->setEnabled(true);
         ui->stop->setEnabled(true);
         ui->pause->setEnabled(true);
+        ui->treatment->setEnabled(true);
+        ui->contact->setEnabled(true);
+        ui->contact_lost->setEnabled(true);
     } else if (option == SessionLog) {
         updateSessionLogDisplay();
         ui->session_log_data->setVisible(true);
@@ -312,6 +320,9 @@ void MainWindow::disableAll() {
     ui->start->setEnabled(false);
     ui->stop->setEnabled(false);
     ui->pause->setEnabled(false);
+    ui->treatment->setEnabled(false);
+    ui->contact->setEnabled(false);
+    ui->contact_lost->setEnabled(false);
 }
 
 void MainWindow::onPowerButtonClicked() {
