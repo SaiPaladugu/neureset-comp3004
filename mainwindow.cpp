@@ -152,9 +152,33 @@ void MainWindow::updateTimer() {
     }
 }
 
-void MainWindow::lightChange(){
+void MainWindow::lightChange(int light){
     //Change light in display Sai
-    qDebug() << "light Changed";
+    light++;
+    switch(light){
+        case 1:
+            ui->light_1->setStyleSheet("background-color: blue");
+            break;
+        case 2:
+            ui->light_2->setStyleSheet("background-color: green");
+            break;
+        case 3:
+            ui->light_3->setStyleSheet("background-color: red");
+            break;
+        case 4:
+            ui->light_1->setStyleSheet("background-color: white");
+            break;
+        case 5:
+            ui->light_2->setStyleSheet("background-color: white");
+            break;
+        case 6:
+            ui->light_3->setStyleSheet("background-color: white");
+            break;
+        default:
+            ui->light_1->setStyleSheet("background-color: white");
+            ui->light_2->setStyleSheet("background-color: white");
+            ui->light_3->setStyleSheet("background-color: white");
+    }
 }
 
 void MainWindow::updateDisplay(MenuOption option)
