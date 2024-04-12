@@ -30,6 +30,7 @@ private:
     Light* lights[NUM_LIGHTS];
 
     // new stuff to be added to UML
+    QTimer* pauseTimer;
     int initialAverageBaseline;
     bool paused;
     int currentSiteIndex;
