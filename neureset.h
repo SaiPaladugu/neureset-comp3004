@@ -32,9 +32,6 @@ private:
     // new stuff to be added to UML
     int initialAverageBaseline;
     bool paused;
-    QTimer* pauseTimer;
-    bool sessionInProgress;
-    bool sessionPaused;
     int currentSiteIndex;
     bool running;
 
@@ -63,6 +60,9 @@ public:
     bool isPaused();
 
     void siteProcessing();
+
+signals:
+    void lightChanged();
 
 public slots:
     void stopSession();

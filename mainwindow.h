@@ -23,7 +23,7 @@ public:
         TimeDate,
         Menu
     };
-    Neureset neureset;
+    Neureset* neureset;
 
     void updateDisplay(MenuOption option);
 
@@ -34,6 +34,7 @@ public slots:
     void changeDisplay(MenuOption option = Menu);
     void pauseSession();
     void startSession();
+    void lightChange();
     void stopSession();
 
 private:

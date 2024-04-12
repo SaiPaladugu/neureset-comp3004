@@ -8,7 +8,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    Neureset* neureset;
+    neureset = new Neureset();
 
     // set default label background to clear and other elements to invisible
     ui->new_session->setStyleSheet("background-color: #FFFFFF");
@@ -36,11 +36,13 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->pause, &QPushButton::clicked, this, &MainWindow::pauseSession);
     connect(ui->start, &QPushButton::clicked, this, &MainWindow::startSession);
     connect(ui->dateTimeEdit, &QDateTimeEdit::dateTimeChanged, this, &MainWindow::updateDateTimeDisplay);
+    connect(neureset, &Neureset::lightChanged, this, &MainWindow::lightChange);
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+    delete neureset;
 }
 
 void MainWindow::onUpArrowPressed()
@@ -97,16 +99,21 @@ void MainWindow::changeDisplay(MenuOption option)
 
 void MainWindow::pauseSession()
 {
-    neureset.pauseSession();
+    neureset->pauseSession();
 }
 
 void MainWindow::startSession(){
-    if(neureset.isRunning()) neureset.unpauseSession();
-    else QtConcurrent::run(std::mem_fn(&Neureset::newSession), &neureset);
+    if(neureset->isRunning()) neureset->unpauseSession();
+    else QtConcurrent::run(std::mem_fn(&Neureset::newSession), neureset);
 }
 
 void MainWindow::stopSession(){
     // logic
+}
+
+void MainWindow::lightChange(){
+    //Change light in display Sai
+    qDebug() << "light Changed";
 }
 
 void MainWindow::updateDisplay(MenuOption option)
@@ -167,7 +174,7 @@ void MainWindow::updateSessionLogDisplay()
 {
     // clear existing data and fetch the new data
     ui->session_log_data->clear();
-    QVector<Session*>& sessions = neureset.sessionLog();
+    QVector<Session*>& sessions = neureset->sessionLog();
 
     // appending logic
     for (Session* session : sessions) {

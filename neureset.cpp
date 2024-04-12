@@ -7,11 +7,14 @@ Neureset::Neureset(QObject *parent) : beeping(false), time(QDateTime::currentDat
         sites.append(new EEGSite());
     }
 
+    currentSiteIndex = 0;
     initialAverageBaseline = -1;
 
     lights[0] = new Light("blue");
     lights[1] = new Light("green");
     lights[2] = new Light("red");
+
+    beeping = false;
     paused = true;
 
     QVector<Session*> importedSessions = importSessionData("sessions_data.txt");
@@ -40,6 +43,8 @@ void Neureset::newSession(){
     }
     running = true;
     if (paused == true) paused = false;
+    lights[0]->changeLight("ON");
+    emit lightChanged();
     calculateBaseline();
 
     curSession = new Session();
@@ -118,6 +123,14 @@ void Neureset::finishSession(){
 
 void Neureset::processNextSite(){
         // Process the current site
+        notify("Calculating site baseline");
+        sites[currentSiteIndex]->calculateSiteBaseline();
+        lights[2]->changeLight("ON");
+        emit lightChanged();
+        sites[currentSiteIndex]->applyTreatment();
+        notify("Treatment applied");
+        lights[2]->changeLight("OFF");
+        emit lightChanged();
         sites.at(currentSiteIndex)->calculateSiteBaseline();
         sites.at(currentSiteIndex)->applyTreatment();
         currentSiteIndex++;
@@ -174,10 +187,10 @@ bool Neureset::isRunning(){
     return running;
 }
 
+
 bool Neureset::isPaused(){
     return paused;
 }
-
 
 bool Neureset::exportSessionData(const QString& filename, const QVector<Session*>& sessions){
     qDebug()<<"In export";
