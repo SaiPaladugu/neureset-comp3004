@@ -54,6 +54,7 @@ private:
     void onPowerButtonClicked();
     void disableAll();
     void disableSafety();
+    void updateGraphData();
     int totalDurationInSeconds;
 
     MenuOption currentSelection;

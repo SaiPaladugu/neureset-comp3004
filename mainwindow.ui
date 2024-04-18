@@ -174,7 +174,7 @@
      </property>
      <property name="geometry">
       <rect>
-       <x>120</x>
+       <x>40</x>
        <y>60</y>
        <width>61</width>
        <height>31</height>
@@ -191,6 +191,16 @@
      </property>
      <property name="displayFormat">
       <string>mm:ss</string>
+     </property>
+    </widget>
+    <widget class="QCustomPlot" name="graph" native="true">
+     <property name="geometry">
+      <rect>
+       <x>130</x>
+       <y>30</y>
+       <width>120</width>
+       <height>80</height>
+      </rect>
      </property>
     </widget>
     <widget class="QListWidget" name="session_log_data">
@@ -390,6 +400,14 @@
    </widget>
   </widget>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QCustomPlot</class>
+   <extends>QWidget</extends>
+   <header>qcustomplot.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>
