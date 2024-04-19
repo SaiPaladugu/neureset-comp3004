@@ -79,7 +79,7 @@ void Neureset::unpauseSession(){
             pauseTimer->stop();
         }
 
-    siteProcessing();
+     QtConcurrent::run(std::mem_fn(&Neureset::siteProcessing), this);
 }
 
 void Neureset::siteProcessing(){
@@ -183,6 +183,7 @@ void Neureset::processNextSite(){
         // Process the current site
 
         notify("Calculating site baseline");
+        sites.at(currentSiteIndex)->generateFrequencies();
 
         if(calibrateSite() == true){
             int* frequencies = sites.at(currentSiteIndex)->getFrequencies();
@@ -247,7 +248,6 @@ void Neureset::calculateBaseline(){
         else{
             stopSession();
         }
-        //qInfo() << sites.at(i)->getBaseline();
     }
     QThread::msleep(875);
 
