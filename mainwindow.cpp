@@ -280,7 +280,7 @@ void MainWindow::updateDisplay(MenuOption option)
 
 void MainWindow::updateDateTimeDisplay()
 {
-    ui->dateTimeEdit->setDateTime(currentDateTime);
+    currentDateTime = ui->dateTimeEdit->dateTime();
 }
 
 void MainWindow::updateSessionLogDisplay()
