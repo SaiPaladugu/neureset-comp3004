@@ -3,7 +3,6 @@
 EEGSite::EEGSite()
 {
     siteBaseline = 0;
-    incrementTimer = 1;
     band = QRandomGenerator::global()->bounded(1,6);
 
     generateFrequencies();

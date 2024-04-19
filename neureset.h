@@ -22,51 +22,63 @@ class EEGSite;
 
 class Neureset : public QObject, public Mediator {
     Q_OBJECT
+
 private:
+    //Data
     QVector<Session*> sessions;
     QVector<EEGSite*> sites;
     QDateTime time;
-    bool beeping;
     Light* lights[NUM_LIGHTS];
-
-    // new stuff to be added to UML
     QTimer* pauseTimer;
+
+    //Calculation
     int initialAverageBaseline;
-    bool paused;
     int currentSiteIndex;
+    int incrementTimer;
+
+    //Status
+    bool paused;
     bool running;
     bool flash;
+    bool beeping;
 
     Session* curSession;
     
 
 public:
-    Neureset(QObject *parent = nullptr);
+    Neureset();
     ~Neureset();
 
+    //Functionality
     virtual void newSession();
     virtual void pauseSession();
     virtual void unpauseSession();
     virtual void finishSession();
-    // void stopSession();
-    void changeDateTime(QDateTime newTime);
-    virtual QVector<Session*>& sessionLog();
-    void beepFlash();
     virtual void calculateBaseline();
     void notify(QString message);
 
+    //Menu
+    void changeDateTime(QDateTime newTime);
+    virtual QVector<Session*>& sessionLog();
+
+    //Import + Export
     virtual bool exportSessionData(const QString& filepath, const QVector<Session*>& sessions);
     virtual QVector<Session*> importSessionData(const QString& filename);
 
+    //Status
     bool isRunning();
     bool isPaused();
 
+    //Calculation
+    void processNextSite();
     void siteProcessing();
     bool calibrateSite();
+    int getIncrement();
 
-    int incrementTimer;
+    //Safety
     void contactLostProtocol();
     void contactReestablishedProtocol();
+    void beepFlash();
 
 signals:
     void lightChanged(int);
@@ -76,7 +88,6 @@ signals:
 
 public slots:
     void stopSession();
-    void processNextSite();
 };
 
 #endif // NERUSET_H

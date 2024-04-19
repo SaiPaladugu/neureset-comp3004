@@ -1,62 +1,75 @@
 #include "neureset.h"
 
-Neureset::Neureset(QObject *parent) : beeping(false), time(QDateTime::currentDateTime()) {
+Neureset::Neureset() : time(QDateTime::currentDateTime()) {
     qInfo() << "Neureset created";
-    // Create the eeg sites
+
+    //Create the eeg sites
     for (int i = 0 ; i < NUM_SITES; i++){
         sites.append(new EEGSite());
     }
 
+    //Calculation variables
     currentSiteIndex = 0;
     initialAverageBaseline = -1;
     incrementTimer = 1;
 
+    //Lights
     lights[0] = new Light("blue");
     lights[1] = new Light("green");
     lights[2] = new Light("red");
 
+    //Status
     beeping = false;
     paused = true;
     running = false;
     flash = false;
 
+    //Session
+    curSession = nullptr;
     QVector<Session*> importedSessions = importSessionData("sessions_data.txt");
     for (Session* session : importedSessions){
         sessions.append(session);
     }
 
+    //Time
+    time = QDateTime::currentDateTime();
     pauseTimer = new QTimer(this);
-    curSession = nullptr;
-
     connect(pauseTimer, &QTimer::timeout, this, &Neureset::stopSession);
 }
 
 Neureset::~Neureset() {
     qInfo() << "Neureset destroyed";
+
+    //Deleting sites
     for (int i = 0; i < NUM_SITES; i++){
         delete sites.at(i);
     }
-    // Deleting lights
+
+    //Deleting lights
     delete lights[0];
     delete lights[1];
     delete lights[2];
+
+    //Deleting timer
+    delete pauseTimer;
 }
 
 void Neureset::newSession(){
-    if (isRunning()){
-        return;
-    }
+    if (isRunning()) return;
+
     running = true;
-    if (paused == true) paused = false;
+    if (paused) paused = false;
+
+    //Start the session
     lights[0]->changeLight("ON");
     emit lightChanged(0);
     calculateBaseline();
+    currentSiteIndex = 0;
 
     curSession = new Session();
     curSession->startBaseline = this->initialAverageBaseline;
     curSession->dateTime = QDateTime::currentDateTime();
 
-    currentSiteIndex = 0;
     siteProcessing();
 }
 
@@ -65,10 +78,10 @@ void Neureset::pauseSession(){
 
     paused = true;
 
-    if (pauseTimer->isActive()) {
-        pauseTimer->stop();
-    }
+    //Reset pause shutdown timer if active
+    if (pauseTimer->isActive()) pauseTimer->stop();
 
+    //Start pause shutdown timer
     pauseTimer->start(300000);
 }
 
@@ -80,6 +93,7 @@ void Neureset::unpauseSession(){
             pauseTimer->stop();
         }
 
+    //Resume calculations asynchronously
      QtConcurrent::run(std::mem_fn(&Neureset::siteProcessing), this);
 }
 
@@ -95,15 +109,19 @@ void Neureset::siteProcessing(){
 void Neureset::stopSession(){
     if(isRunning() == false) return;
     qDebug()<<"Stopping session, most recent session will not be saved";
+
     paused = true;
     running = false;
     currentSiteIndex = 0;
+
     if(pauseTimer->isActive()) pauseTimer->stop();
 
     if (curSession != nullptr){
         delete curSession;
         curSession = nullptr;
     }
+
+    //Emit signal to stop mainwindow timer
     emit stop();
 }
 
@@ -120,25 +138,30 @@ void Neureset::finishSession(){
     if (!sessions.empty()){
         sessions.back()->endBaseline = finalAverageBaseline;
     }
-
     qInfo() << "End baseline" << finalAverageBaseline;
+
     running = false;
     paused = false;
     currentSiteIndex = 0;
     curSession = nullptr;
+
     qDebug()<<"Session finished and saved.";
+
+    //Emit signal to stop mainwindow timer
     emit stop();
 }
 
 bool Neureset::calibrateSite(){
     bool valid = true;
     int band = sites.at(currentSiteIndex)->getBand();
+
     for(int i = 0; i < 3; i++){
+        //Check amplitude
         if(sites.at(currentSiteIndex)->getAmplitudes()[i] > 100 || sites.at(currentSiteIndex)->getAmplitudes()[i] < 0) {
             valid = false;
             break;
         }
-
+        //Chec band freuency
         switch(band){
             //Alpha band
             case 1:
@@ -195,6 +218,7 @@ void Neureset::processNextSite(){
             sites.at(currentSiteIndex)->setBaseline(calculation);
         }
         else{
+            //Data is invalid
             stopSession();
         }
         QThread::msleep(950);
@@ -221,19 +245,17 @@ void Neureset::changeDateTime(QDateTime newTime){
     time = newTime;
 }
 
-QVector<Session*>& Neureset::sessionLog(){
-    return sessions;
-}
-
 void Neureset::beepFlash(){
-    if (beeping) {
+    if (beeping && paused) {
         QTimer::singleShot(1000, this, &Neureset::beepFlash);
-        if (!flash && running && paused){
+        if (!flash && running){
+            //Beep and flash on
             qInfo() << "Beep!";
             flash = true;
             emit lightChanged(2);
         }
         else{
+            //Flash off
             flash = false;
             emit lightChanged(5);
         }
@@ -252,6 +274,7 @@ void Neureset::calculateBaseline(){
             sites.at(i)->setBaseline(calculation);
         }
         else{
+            //Data invalid
             stopSession();
         }
     }
@@ -267,20 +290,6 @@ void Neureset::calculateBaseline(){
     qInfo()  << "average initial" << initialAverageBaseline;
 }
 
-void Neureset::notify(QString message){
-    qDebug() << message;
-}
-
-
-bool Neureset::isRunning(){
-    return running;
-}
-
-
-bool Neureset::isPaused(){
-    return paused;
-}
-
 void Neureset::contactLostProtocol(){
     notify("Contact lost");
     emit pause();
@@ -290,6 +299,7 @@ void Neureset::contactLostProtocol(){
     beeping = true;
     beepFlash();
 
+    //Demo purposes assume user reconnects
     QTimer::singleShot(10000, this, &Neureset::contactReestablishedProtocol);
 }
 
@@ -301,7 +311,6 @@ void Neureset::contactReestablishedProtocol(){
     emit lightChanged(0);
     emit unpause();
 }
-
 
 bool Neureset::exportSessionData(const QString& filename, const QVector<Session*>& sessions){
     qDebug()<<"In export";
@@ -361,3 +370,13 @@ QVector<Session*> Neureset::importSessionData(const QString& filename){
     file.close();
     return sessions;
 }
+
+void Neureset::notify(QString message){qInfo() << message;}
+
+bool Neureset::isRunning() {return running;}
+
+QVector<Session*>& Neureset::sessionLog() {return sessions;}
+
+bool Neureset::isPaused(){return paused;}
+
+int Neureset::getIncrement(){return  incrementTimer;}
