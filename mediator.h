@@ -13,6 +13,7 @@ public:
     virtual void newSession() = 0;
     virtual void pauseSession() = 0;
     virtual void unpauseSession() = 0;
+    virtual void stopSession() = 0;
     virtual void finishSession() = 0;
     virtual QVector<Session*>& sessionLog() = 0;
     virtual void calculateBaseline() = 0;

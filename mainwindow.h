@@ -36,7 +36,7 @@ public slots:
     void changeDisplay(MenuOption option = Menu);
     void pauseSession();
     void startSession();
-    void lightChange(int);
+    void lightChange(int light);
     void stopSession();
     void resetLight();
     void contactLost();

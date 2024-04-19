@@ -54,6 +54,7 @@ public:
     virtual void pauseSession();
     virtual void unpauseSession();
     virtual void finishSession();
+    virtual void stopSession();
     virtual void calculateBaseline();
     void notify(QString message);
 
@@ -81,13 +82,10 @@ public:
     void beepFlash();
 
 signals:
-    void lightChanged(int);
+    void lightChanged(int light);
     void pause();
     void unpause();
     void stop();
-
-public slots:
-    void stopSession();
 };
 
 #endif // NERUSET_H
