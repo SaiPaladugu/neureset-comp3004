@@ -1,4 +1,4 @@
-<mxfile host="Electron" modified="2024-04-18T03:01:51.111Z" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/21.6.5 Chrome/114.0.5735.243 Electron/25.3.1 Safari/537.36" etag="xOF64NRcUdRAYPRAc77J" version="21.6.5" type="device" pages="6">
+<mxfile host="Electron" modified="2024-04-18T03:15:15.570Z" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/21.6.5 Chrome/114.0.5735.243 Electron/25.3.1 Safari/537.36" etag="_MzsYcZN9nexEU7HFMrG" version="21.6.5" type="device" pages="6">
   <diagram id="qP2TZVc7RIBKxnecBYps" name="State Machine">
     <mxGraphModel dx="2324" dy="1214" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
@@ -757,7 +757,7 @@
       </root>
     </mxGraphModel>
   </diagram>
-  <diagram id="AY938nCXQ7msFAM-QKZJ" name="Page-6">
+  <diagram id="AY938nCXQ7msFAM-QKZJ" name="Battery Low Case">
     <mxGraphModel dx="737" dy="607" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
         <mxCell id="0" />
@@ -805,7 +805,7 @@
         <mxCell id="1BKuhXCbXcXovMfA7Mj9-14" value="" style="html=1;points=[];perimeter=orthogonalPerimeter;outlineConnect=0;targetShapes=umlLifeline;portConstraint=eastwest;newEdgeStyle={&quot;edgeStyle&quot;:&quot;elbowEdgeStyle&quot;,&quot;elbow&quot;:&quot;vertical&quot;,&quot;curved&quot;:0,&quot;rounded&quot;:0};" vertex="1" parent="1BKuhXCbXcXovMfA7Mj9-1">
           <mxGeometry x="50" y="175" width="10" height="15" as="geometry" />
         </mxCell>
-        <mxCell id="1BKuhXCbXcXovMfA7Mj9-15" value="disabelAll()" style="html=1;align=left;spacingLeft=2;endArrow=block;rounded=0;edgeStyle=orthogonalEdgeStyle;curved=0;rounded=0;" edge="1" parent="1BKuhXCbXcXovMfA7Mj9-1" target="1BKuhXCbXcXovMfA7Mj9-14">
+        <mxCell id="1BKuhXCbXcXovMfA7Mj9-15" value="disableAll()" style="html=1;align=left;spacingLeft=2;endArrow=block;rounded=0;edgeStyle=orthogonalEdgeStyle;curved=0;rounded=0;" edge="1" parent="1BKuhXCbXcXovMfA7Mj9-1" target="1BKuhXCbXcXovMfA7Mj9-14">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="55" y="165" as="sourcePoint" />
             <Array as="points">
