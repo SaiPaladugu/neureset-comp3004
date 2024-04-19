@@ -24,7 +24,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->dateTimeEdit->setVisible(false);
     currentDateTime = QDateTime::currentDateTime();
     ui->dateTimeEdit->setDateTime(currentDateTime);
-    updateGraphData();
+    // updateGraphData();
 
     // setting first option, new_session, to be highlighted yellow
     ui->new_session->setStyleSheet("background-color: #FFFF00");
@@ -62,8 +62,6 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->power, &QPushButton::clicked, this, &MainWindow::onPowerButtonClicked);
 
     // safety
-    ui->treatment->setEnabled(false);
-    ui->contact->setEnabled(false);
     ui->contact_lost->setEnabled(false);
 }
 
@@ -161,9 +159,12 @@ void MainWindow::stopSession(){
     timer->stop();
     changeDisplay(Menu);
     ui->session_progress->setValue(0);
+    ui->graph->clearGraphs();
+    ui->graph->replot();
 }
 
 void MainWindow::updateTimer() {
+    updateGraphData(neureset->getCurrentSiteIndex());
     QTime currentTime = ui->timer->time();
     int currentSeconds = QTime(0, 0, 0).secsTo(currentTime);
     int seconds = QTime(0, 0, 0).secsTo(currentTime);
@@ -175,6 +176,8 @@ void MainWindow::updateTimer() {
     } else {
         timer->stop();
         stopSession();
+        ui->graph->clearGraphs();
+        ui->graph->replot();
 
         int newBatteryLevel = ui->battery->value() - 50;
         if (newBatteryLevel < 0) newBatteryLevel = 0;
@@ -184,7 +187,7 @@ void MainWindow::updateTimer() {
             onPowerButtonClicked();
             disableAll();
             disableSafety();
-            ui->power->setEnabled(false);
+            ui->power->setEnabled(true);
             ui->menu->setEnabled(false);
             ui->up_arrow->setEnabled(false);
             ui->down_arrow->setEnabled(false);
@@ -248,8 +251,6 @@ void MainWindow::updateDisplay(MenuOption option)
         ui->start->setEnabled(true);
         ui->stop->setEnabled(true);
         ui->pause->setEnabled(true);
-        ui->treatment->setEnabled(true);
-        ui->contact->setEnabled(true);
         ui->contact_lost->setEnabled(true);
         ui->graph->setVisible(true);
     } else if (option == SessionLog) {
@@ -261,6 +262,10 @@ void MainWindow::updateDisplay(MenuOption option)
     } else {
         // default menu display (same as constructor)
         // set default label background to clear and other elements to invisible
+        ui->up_arrow->setEnabled(true);
+        ui->down_arrow->setEnabled(true);
+        ui->select->setEnabled(true);
+        ui->menu->setEnabled(true);
         ui->new_session->setVisible(true);
         ui->session_log->setVisible(true);
         ui->time_date->setVisible(true);
@@ -309,14 +314,27 @@ void MainWindow::startNeuresetSession()
     ui->session_progress->setValue(0);
 }
 
-void MainWindow::updateGraphData() {
+
+void MainWindow::updateGraphData(int siteIndex) {
+    if (siteIndex > 7 || siteIndex < 0) {
+        return;
+    }
     QVector<double> x(101), y(101);
+
+    double f1 = neureset->getSites().at(siteIndex)->getFrequencies()[0];
+    double A1 = neureset->getSites().at(siteIndex)->getAmplitudes()[0];
+    double f2 = neureset->getSites().at(siteIndex)->getFrequencies()[1];
+    double A2 = neureset->getSites().at(siteIndex)->getAmplitudes()[1];
+    double f3 = neureset->getSites().at(siteIndex)->getFrequencies()[2];
+    double A3 = neureset->getSites().at(siteIndex)->getAmplitudes()[2];
+
+    double fd = (f1 * A1 * A1 + f2 * A2 * A2 + f3 * A3 * A3) / (A1 * A1 + A2 * A2 + A3 * A3);
+
     double xShift = ((rand() % 1000) / 1000.0) * 2 * M_PI;
-    double amplitudeShift = ((rand() % 200) / 100.0);
 
     for (int i = 0; i < 101; ++i) {
-        x[i] = i / 10.0 - 10 + xShift;
-        y[i] = sin(x[i]) * (1 + amplitudeShift);
+        x[i] = i / 10.0 - 10;
+        y[i] = sin(fd * x[i] + xShift);
     }
 
     ui->graph->xAxis->setTickLabels(false);
@@ -327,10 +345,16 @@ void MainWindow::updateGraphData() {
     ui->graph->replot();
 }
 
+
 void MainWindow::disableSafety() {
     ui->contact_lost->setEnabled(false);
-    ui->contact->setEnabled(false);
-    ui->treatment->setEnabled(false);
+}
+
+void MainWindow::disableMenuButtons() {
+    ui->up_arrow->setEnabled(false);
+    ui->down_arrow->setEnabled(false);
+    ui->select->setEnabled(false);
+    ui->menu->setEnabled(false);
 }
 
 void MainWindow::disableAll() {
@@ -344,15 +368,21 @@ void MainWindow::disableAll() {
     ui->start->setEnabled(false);
     ui->stop->setEnabled(false);
     ui->pause->setEnabled(false);
-    ui->treatment->setEnabled(false);
-    ui->contact->setEnabled(false);
     ui->contact_lost->setEnabled(false);
     ui->graph->setVisible(false);
 }
 
 void MainWindow::onPowerButtonClicked() {
+    // if dead, follow dead battery protocol
+    if (ui->battery->value() == 0) {
+        QMessageBox::critical(this, "Battery Status", "Battery dead");
+        return;
+    }
+
+    // otherwise, handle like normal
     if (powerStatus == true) {
         disableAll();
+        disableMenuButtons();
         powerStatus = false;
     } else if (powerStatus == false) {
         changeDisplay(Menu);

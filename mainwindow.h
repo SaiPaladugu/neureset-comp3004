@@ -53,8 +53,9 @@ private:
     void updateTimer();
     void onPowerButtonClicked();
     void disableAll();
+    void disableMenuButtons();
     void disableSafety();
-    void updateGraphData();
+    void updateGraphData(int site);
     int totalDurationInSeconds;
 
     MenuOption currentSelection;

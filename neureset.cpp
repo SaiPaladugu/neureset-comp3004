@@ -380,3 +380,7 @@ QVector<Session*>& Neureset::sessionLog() {return sessions;}
 bool Neureset::isPaused(){return paused;}
 
 int Neureset::getIncrement(){return  incrementTimer;}
+
+QVector<EEGSite*> Neureset::getSites(){ return sites; }
+
+int Neureset::getCurrentSiteIndex(){ return currentSiteIndex; }

@@ -75,6 +75,8 @@ public:
     void siteProcessing();
     bool calibrateSite();
     int getIncrement();
+    QVector<EEGSite*> getSites();
+    int getCurrentSiteIndex();
 
     //Safety
     void contactLostProtocol();

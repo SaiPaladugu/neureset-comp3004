@@ -30,37 +30,11 @@
      <number>100</number>
     </property>
    </widget>
-   <widget class="QPushButton" name="contact">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>10</y>
-      <width>91</width>
-      <height>25</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Contact</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="treatment">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>50</y>
-      <width>91</width>
-      <height>25</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Treatment</string>
-    </property>
-   </widget>
    <widget class="QPushButton" name="contact_lost">
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>90</y>
+      <y>10</y>
       <width>91</width>
       <height>25</height>
      </rect>
