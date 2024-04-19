@@ -56,6 +56,7 @@ MainWindow::MainWindow(QWidget *parent)
     //Contact lost button
     connect(ui->contact_lost, &QPushButton::clicked, this, &MainWindow::contactLost);
     connect(neureset, &Neureset::pause, this, &MainWindow::pauseSession);
+    connect(neureset, &Neureset::unpause, this, &MainWindow::startSession);
 
     // power
     connect(ui->power, &QPushButton::clicked, this, &MainWindow::onPowerButtonClicked);
