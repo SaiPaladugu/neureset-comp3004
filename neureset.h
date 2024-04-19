@@ -61,6 +61,8 @@ public:
     bool isPaused();
 
     void siteProcessing();
+    bool calibrateSite();
+
     int incrementTimer;
     void contactLostProtocol();
 
