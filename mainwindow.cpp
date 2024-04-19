@@ -133,7 +133,7 @@ void MainWindow::startSession(){
     } else {
         // if not already running, start new timer
         QtConcurrent::run(std::mem_fn(&Neureset::newSession), neureset);
-        int seconds = 7 + (1 + neureset->incrementTimer) * 7;
+        int seconds = 1 + (1 + neureset->incrementTimer) * 7;
         int minutes = seconds / 60;
         int remainingSeconds = seconds % 60;
         QTime startTime(0, minutes, remainingSeconds);
@@ -292,7 +292,7 @@ void MainWindow::updateSessionLogDisplay()
 
 void MainWindow::startNeuresetSession()
 {
-    int seconds = 7 + (neureset->incrementTimer + 1) * 7;
+    int seconds = 1 + (neureset->incrementTimer + 1) * 7;
     totalDurationInSeconds = seconds;
     int minutes = seconds / 60;
     int remainingSeconds = seconds % 60;
