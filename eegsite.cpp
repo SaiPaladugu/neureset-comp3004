@@ -48,7 +48,6 @@ void EEGSite::generateFrequencies(){
 void EEGSite::applyTreatment(){
     for(int i = 0; i < 16; i++){
         siteBaseline = siteBaseline + 5;
-        QThread::msleep(63);
     }
 }
 

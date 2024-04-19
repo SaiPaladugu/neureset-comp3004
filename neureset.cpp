@@ -18,6 +18,7 @@ Neureset::Neureset(QObject *parent) : beeping(false), time(QDateTime::currentDat
     beeping = false;
     paused = true;
     running = false;
+    flash = false;
 
     QVector<Session*> importedSessions = importSessionData("sessions_data.txt");
     for (Session* session : importedSessions){
@@ -196,21 +197,23 @@ void Neureset::processNextSite(){
         else{
             stopSession();
         }
-        QThread::msleep(875);
-        //qInfo() << "baseline" << sites.at(currentSiteIndex)->getBaseline();
+        QThread::msleep(950);
 
-        //Flash green light on
-        lights[1]->changeLight("ON");
-        emit lightChanged(1);
+        if(!paused){
+            //Flash green light on
+            lights[1]->changeLight("ON");
+            emit lightChanged(1);
 
-        sites.at(currentSiteIndex)->applyTreatment();
+            sites.at(currentSiteIndex)->applyTreatment();
+            QThread::msleep(1000);
 
-        //Flash green light off
-        lights[1]->changeLight("OFF");
-        emit lightChanged(4);
-        notify("Treatment applied");
+            //Flash green light off
+            lights[1]->changeLight("OFF");
+            emit lightChanged(4);
+            notify("Treatment applied");
 
-        currentSiteIndex++;
+            currentSiteIndex++;
+        }
 }
 
 void Neureset::changeDateTime(QDateTime newTime){
@@ -223,14 +226,17 @@ QVector<Session*>& Neureset::sessionLog(){
 }
 
 void Neureset::beepFlash(){
-    QTimer::singleShot(1000, this, &Neureset::beepFlash);
-    if (!beeping && running == true){
-        beeping = true;
-        qInfo() << "Beep!";
-        emit lightChanged(2);
-    } else {
-        beeping = false;
-        emit lightChanged(5);
+    if (beeping) {
+        QTimer::singleShot(1000, this, &Neureset::beepFlash);
+        if (!flash && running && paused){
+            qInfo() << "Beep!";
+            flash = true;
+            emit lightChanged(2);
+        }
+        else{
+            flash = false;
+            emit lightChanged(5);
+        }
     }
 }
 
@@ -249,7 +255,7 @@ void Neureset::calculateBaseline(){
             stopSession();
         }
     }
-    QThread::msleep(875);
+    QThread::msleep(950);
 
     // Calculate average baseline across EEG
     initialAverageBaseline = 0;
@@ -281,8 +287,21 @@ void Neureset::contactLostProtocol(){
     lights[2]->changeLight("FLASHING");
     lights[0]->changeLight("OFF");
     emit lightChanged(3);
+    beeping = true;
     beepFlash();
+
+    QTimer::singleShot(10000, this, &Neureset::contactReestablishedProtocol);
 }
+
+void Neureset::contactReestablishedProtocol(){
+    beeping = false;
+    notify("Contact Reestablished");
+    lights[0]->changeLight("ON");
+    lights[2]->changeLight("OFF");
+    emit lightChanged(0);
+    emit unpause();
+}
+
 
 bool Neureset::exportSessionData(const QString& filename, const QVector<Session*>& sessions){
     qDebug()<<"In export";

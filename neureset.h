@@ -35,6 +35,7 @@ private:
     bool paused;
     int currentSiteIndex;
     bool running;
+    bool flash;
 
     Session* curSession;
     
@@ -65,10 +66,12 @@ public:
 
     int incrementTimer;
     void contactLostProtocol();
+    void contactReestablishedProtocol();
 
 signals:
     void lightChanged(int);
     void pause();
+    void unpause();
     void stop();
 
 public slots:
