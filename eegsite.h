@@ -15,7 +15,6 @@ public:
     void setBaseline(int);
     int* getFrequencies();
     int* getAmplitudes();
-    int incrementTimer;
     int getBand();
 
 private:
