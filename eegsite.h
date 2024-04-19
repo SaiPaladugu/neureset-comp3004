@@ -11,6 +11,7 @@ public:
     ~EEGSite();
     void generateFrequencies();
     void applyTreatment();
+
     int getBaseline();
     void setBaseline(int);
     int* getFrequencies();
