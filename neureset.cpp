@@ -68,7 +68,7 @@ void Neureset::pauseSession(){
         pauseTimer->stop();
     }
 
-    pauseTimer->start(10000);
+    pauseTimer->start(300000);
 }
 
 void Neureset::unpauseSession(){

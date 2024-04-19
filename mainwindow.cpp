@@ -18,11 +18,13 @@ MainWindow::MainWindow(QWidget *parent)
     ui->timer->setVisible(false);
     ui->session_progress->setVisible(false);
     ui->session_log_data->setVisible(false);
+    ui->graph->setVisible(false);
 
-    // hide date and time initially but the values
+    // hide date and time initially but set the values up
     ui->dateTimeEdit->setVisible(false);
     currentDateTime = QDateTime::currentDateTime();
     ui->dateTimeEdit->setDateTime(currentDateTime);
+    updateGraphData();
 
     // setting first option, new_session, to be highlighted yellow
     ui->new_session->setStyleSheet("background-color: #FFFF00");
@@ -127,10 +129,13 @@ void MainWindow::changeDisplay(MenuOption option)
 }
 
 void MainWindow::startSession(){
+    qDebug() << "test";
     if(neureset->isRunning()) {
-        neureset->unpauseSession();
+        qDebug() << "unpausing";
         timer->start(1000);  // continue the countdown
-    } else {
+        QtConcurrent::run(std::mem_fn(&Neureset::unpauseSession), neureset);
+    } else { // create new session
+        qDebug() << "unpausing 1";
         // if not already running, start new timer
         QtConcurrent::run(std::mem_fn(&Neureset::newSession), neureset);
         int seconds = 1 + (1 + neureset->incrementTimer) * 7;
@@ -145,12 +150,13 @@ void MainWindow::startSession(){
 
 void MainWindow::pauseSession()
 {
+    qDebug() << "pausing";
     neureset->pauseSession();
     timer->stop();
 }
 
 void MainWindow::stopSession(){
-    neureset->stopSession();
+    neureset->finishSession();
     QTime time(0, 0, 0);
     ui->timer->setTime(time);
     timer->stop();
@@ -246,6 +252,7 @@ void MainWindow::updateDisplay(MenuOption option)
         ui->treatment->setEnabled(true);
         ui->contact->setEnabled(true);
         ui->contact_lost->setEnabled(true);
+        ui->graph->setVisible(true);
     } else if (option == SessionLog) {
         updateSessionLogDisplay();
         ui->session_log_data->setVisible(true);
@@ -303,6 +310,24 @@ void MainWindow::startNeuresetSession()
     ui->session_progress->setValue(0);
 }
 
+void MainWindow::updateGraphData() {
+    QVector<double> x(101), y(101);
+    double xShift = ((rand() % 1000) / 1000.0) * 2 * M_PI;
+    double amplitudeShift = ((rand() % 200) / 100.0);
+
+    for (int i = 0; i < 101; ++i) {
+        x[i] = i / 10.0 - 10 + xShift;
+        y[i] = sin(x[i]) * (1 + amplitudeShift);
+    }
+
+    ui->graph->xAxis->setTickLabels(false);
+    ui->graph->yAxis->setTickLabels(false);
+    ui->graph->addGraph();
+    ui->graph->graph(0)->setData(x, y);
+    ui->graph->rescaleAxes();
+    ui->graph->replot();
+}
+
 void MainWindow::disableSafety() {
     ui->contact_lost->setEnabled(false);
     ui->contact->setEnabled(false);
@@ -323,6 +348,7 @@ void MainWindow::disableAll() {
     ui->treatment->setEnabled(false);
     ui->contact->setEnabled(false);
     ui->contact_lost->setEnabled(false);
+    ui->graph->setVisible(false);
 }
 
 void MainWindow::onPowerButtonClicked() {

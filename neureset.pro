@@ -1,6 +1,6 @@
 QT       += core gui
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets printsupport
 
 CONFIG += c++11
 
@@ -16,6 +16,7 @@ SOURCES += \
     eegsite.cpp \
     mediator.cpp \
     neureset.cpp \
+    qcustomplot.cpp \
     session.cpp 
 
 HEADERS += \
@@ -24,6 +25,7 @@ HEADERS += \
     eegsite.h \
     mediator.h \
     neureset.h \
+    qcustomplot.h \
     session.h 
 
 FORMS += \
