@@ -4,14 +4,13 @@ EEGSite::EEGSite()
 {
     siteBaseline = 0;
     incrementTimer = 1;
+    band = QRandomGenerator::global()->bounded(1,6);
+
+    generateFrequencies();
 }
 EEGSite::~EEGSite(){}
 
-int EEGSite::calculateSiteBaseline(){
-    int band = QRandomGenerator::global()->bounded(1,6);
-    int frequencies[3];
-    int amplitudes[3];
-
+void EEGSite::generateFrequencies(){
     for(int i = 0; i < 3; i++){
        //Randomly generate amplitudes
         amplitudes[i] = QRandomGenerator::global()->bounded(0,101);
@@ -44,11 +43,6 @@ int EEGSite::calculateSiteBaseline(){
             break;
         }
     }
-
-    QThread::msleep(875);
-    siteBaseline = (frequencies[0] * amplitudes[0] + frequencies[1] * amplitudes[1] + frequencies[2] * amplitudes[2])/(amplitudes[0] + amplitudes[1] + amplitudes[2]);
-    qInfo() << siteBaseline;
-    return siteBaseline;
 }
 
 void EEGSite::applyTreatment(){
@@ -60,4 +54,20 @@ void EEGSite::applyTreatment(){
 
 int EEGSite::getBaseline(){
     return siteBaseline;
+}
+
+void EEGSite::setBaseline(int baseline){
+    siteBaseline = baseline;
+}
+
+int* EEGSite::getFrequencies(){
+    return frequencies;
+}
+
+int* EEGSite::getAmplitudes(){
+    return amplitudes;
+}
+
+int EEGSite::getBand(){
+    return band;
 }

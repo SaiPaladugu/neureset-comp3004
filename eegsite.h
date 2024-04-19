@@ -9,13 +9,20 @@ class EEGSite {
 public:
     EEGSite();
     ~EEGSite();
-    int calculateSiteBaseline();
+    void generateFrequencies();
     void applyTreatment();
     int getBaseline();
+    void setBaseline(int);
+    int* getFrequencies();
+    int* getAmplitudes();
     int incrementTimer;
+    int getBand();
 
 private:
     int siteBaseline;
+    int frequencies[3];
+    int amplitudes[3];
+    int band;
 };
 
 #endif

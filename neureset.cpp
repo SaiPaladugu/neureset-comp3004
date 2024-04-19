@@ -68,7 +68,7 @@ void Neureset::pauseSession(){
         pauseTimer->stop();
     }
 
-    pauseTimer->start(10000);
+    pauseTimer->start(300000);
 }
 
 void Neureset::unpauseSession(){
@@ -79,7 +79,7 @@ void Neureset::unpauseSession(){
             pauseTimer->stop();
         }
 
-    siteProcessing();
+     QtConcurrent::run(std::mem_fn(&Neureset::siteProcessing), this);
 }
 
 void Neureset::siteProcessing(){
@@ -92,11 +92,11 @@ void Neureset::siteProcessing(){
 }
 
 void Neureset::stopSession(){
-    //Only output this if session is still running
-    //Add isRunning check?
+    if(isRunning() == false) return;
     qDebug()<<"Stopping session, most recent session will not be saved";
     paused = true;
     running = false;
+    currentSiteIndex = 0;
     if(pauseTimer->isActive()) pauseTimer->stop();
 
     if (curSession != nullptr){
@@ -123,21 +123,93 @@ void Neureset::finishSession(){
     qInfo() << "End baseline" << finalAverageBaseline;
     running = false;
     paused = false;
+    currentSiteIndex = 0;
     curSession = nullptr;
     qDebug()<<"Session finished and saved.";
     emit stop();
 }
 
+bool Neureset::calibrateSite(){
+    bool valid = true;
+    int band = sites.at(currentSiteIndex)->getBand();
+    for(int i = 0; i < 3; i++){
+        if(sites.at(currentSiteIndex)->getAmplitudes()[i] > 100 || sites.at(currentSiteIndex)->getAmplitudes()[i] < 0) {
+            valid = false;
+            break;
+        }
+
+        switch(band){
+            //Alpha band
+            case 1:
+                if(sites.at(currentSiteIndex)->getFrequencies()[i] > 12 || sites.at(currentSiteIndex)->getFrequencies()[i] < 8){
+                    valid = false;
+                }
+            break;
+            //Beta band
+            case 2:
+                if(sites.at(currentSiteIndex)->getFrequencies()[i] > 30 || sites.at(currentSiteIndex)->getFrequencies()[i] < 12){
+                    valid = false;
+                }
+            break;
+            //Delta band
+            case 3:
+                if(sites.at(currentSiteIndex)->getFrequencies()[i] > 4 || sites.at(currentSiteIndex)->getFrequencies()[i] < 1){
+                    valid = false;
+                }
+            break;;
+            //Theta band
+            case 4:
+                if(sites.at(currentSiteIndex)->getFrequencies()[i] > 8 || sites.at(currentSiteIndex)->getFrequencies()[i] < 4){
+                    valid = false;
+                }
+            break;
+            //Gamma band
+            case 5:
+                if(sites.at(currentSiteIndex)->getFrequencies()[i] > 140 || sites.at(currentSiteIndex)->getFrequencies()[i] < 25){
+                    valid = false;
+                }
+            break;
+            //Unknown band
+            default:
+                qInfo() << "Unknown band";
+                valid = false;
+            break;
+        }
+    }
+    return valid;
+}
+
 void Neureset::processNextSite(){
         // Process the current site
+
         notify("Calculating site baseline");
+        sites.at(currentSiteIndex)->generateFrequencies();
+
+        if(calibrateSite() == true){
+            int* frequencies = sites.at(currentSiteIndex)->getFrequencies();
+            int* amplitudes = sites.at(currentSiteIndex)->getAmplitudes();
+
+            int calculation = (frequencies[0] * amplitudes[0] * amplitudes[0]  + frequencies[1] * amplitudes[1] * amplitudes[1] + frequencies[2] *
+                    amplitudes[2] * amplitudes[2])/(amplitudes[0] * amplitudes[0] + amplitudes[1] * amplitudes[1] + amplitudes[2] * amplitudes[2]);
+            sites.at(currentSiteIndex)->setBaseline(calculation);
+        }
+        else{
+            stopSession();
+        }
+        QThread::msleep(875);
+        //qInfo() << "baseline" << sites.at(currentSiteIndex)->getBaseline();
+
+        //Flash green light on
         lights[1]->changeLight("ON");
-        sites.at(currentSiteIndex)->calculateSiteBaseline();
         emit lightChanged(1);
+
         sites.at(currentSiteIndex)->applyTreatment();
+
+        //Flash green light off
         lights[1]->changeLight("OFF");
-        notify("Treatment applied");
         emit lightChanged(4);
+        notify("Treatment applied");
+
         currentSiteIndex++;
 }
 
@@ -165,8 +237,19 @@ void Neureset::beepFlash(){
 void Neureset::calculateBaseline(){
     // Calculate baselines
     for (int i = 0; i < NUM_SITES; i++){
-        sites[i]->calculateSiteBaseline();
+        if(calibrateSite() == true){
+            int* frequencies = sites.at(i)->getFrequencies();
+            int* amplitudes = sites.at(i)->getAmplitudes();
+
+            int calculation = (frequencies[0] * amplitudes[0] * amplitudes[0]  + frequencies[1] * amplitudes[1] * amplitudes[1] + frequencies[2] *
+                    amplitudes[2] * amplitudes[2])/(amplitudes[0] * amplitudes[0] + amplitudes[1] * amplitudes[1] + amplitudes[2] * amplitudes[2]);
+            sites.at(i)->setBaseline(calculation);
+        }
+        else{
+            stopSession();
+        }
     }
+    QThread::msleep(875);
 
     // Calculate average baseline across EEG
     initialAverageBaseline = 0;
