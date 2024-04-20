@@ -41,6 +41,7 @@ public slots:
     void resetLight();
     void contactLost();
     void stop();
+    void exportData();
 
 private:
     bool powerStatus;

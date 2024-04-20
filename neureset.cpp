@@ -312,7 +312,7 @@ void Neureset::contactReestablishedProtocol(){
     emit unpause();
 }
 
-bool Neureset::exportSessionData(const QString& filename, const QVector<Session*>& sessions){
+bool Neureset::exportSessionData(const QString& filename){
     qDebug()<<"In export";
     qDebug() << "Current working directory:" << QDir::currentPath();
     QString sourceDir = SOURCE_DIR;
@@ -327,7 +327,7 @@ bool Neureset::exportSessionData(const QString& filename, const QVector<Session*
     }
 
     QTextStream out(&file);
-    for (const Session* session : sessions){
+    for (const Session* session : this->sessions){
         if (session){
             qDebug()<<"Exporting"<<session->startBaseline;
             out << session->startBaseline <<",";

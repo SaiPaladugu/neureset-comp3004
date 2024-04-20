@@ -63,7 +63,7 @@ public:
     virtual QVector<Session*>& sessionLog();
 
     //Import + Export
-    virtual bool exportSessionData(const QString& filepath, const QVector<Session*>& sessions);
+    virtual bool exportSessionData(const QString& filepath);
     virtual QVector<Session*> importSessionData(const QString& filename);
 
     //Status
