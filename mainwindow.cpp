@@ -61,6 +61,9 @@ MainWindow::MainWindow(QWidget *parent)
     // power
     connect(ui->power, &QPushButton::clicked, this, &MainWindow::onPowerButtonClicked);
 
+    // Export
+    connect(ui->exportButton, &QPushButton::clicked, this, &MainWindow::exportData);
+
     // safety
     ui->contact_lost->setEnabled(false);
 }
@@ -192,6 +195,7 @@ void MainWindow::updateTimer() {
             ui->up_arrow->setEnabled(false);
             ui->down_arrow->setEnabled(false);
             ui->select->setEnabled(false);
+            ui->exportButton->setEnabled(false);
         }
     }
 }
@@ -390,10 +394,10 @@ void MainWindow::onPowerButtonClicked() {
     }
 }
 
-
-
-
-
+void MainWindow::exportData(){
+    QString filename = QString("sessions_data.txt");
+    QtConcurrent::run(std::mem_fn(&Neureset::exportSessionData), neureset, filename);
+}
 
 
 

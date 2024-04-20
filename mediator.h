@@ -17,7 +17,7 @@ public:
     virtual void finishSession() = 0;
     virtual QVector<Session*>& sessionLog() = 0;
     virtual void calculateBaseline() = 0;
-    virtual bool exportSessionData(const QString&, const QVector<Session*>&) = 0;
+    virtual bool exportSessionData(const QString&) = 0;
     virtual QVector<Session*> importSessionData(const QString&) = 0;
 };
 
