@@ -7,6 +7,9 @@
 ## DOCS
 [Project Report](https://docs.google.com/document/d/1GpYElQYB_-NQNbzPbXPtMN7D7WCOxLkb_UZmLV_W55Y/edit#heading=h.gyv2u3humfu3)
 
+## Video Link
+https://youtu.be/JS5XL7FGwnc
+
 ## About
 This repository contains the collective work of our team for the COMP3004 course project.
 
